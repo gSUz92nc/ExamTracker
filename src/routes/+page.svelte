@@ -1,4 +1,8 @@
 <script lang="ts">
+	import { pastPapers,  } from "$lib/pastPapers";
+
+	import type { Paper, Question } from "$lib/pastPapers";
+
 	// Define all types/interfaces
 	interface Subject {
 		id: string;
@@ -8,24 +12,6 @@
 	interface ExamBoard {
 		id: string;
 		name: string;
-	}
-
-	interface Question {
-		id: string; // Changed from number to string to support formats like "1a", "1.2", etc.
-		marks: number;
-		displayName?: string; // Optional display name if different from id
-	}
-
-	interface Paper {
-		id: number;
-		subject: string;
-		board: string;
-		year: number;
-		season: string;
-		paper: string;
-		totalMarks?: number; // Now optional as it will be calculated
-		questions: Question[]; // Questions for this paper
-		url?: string; // Optional URL to the paper
 	}
 
 	interface UserMarks {
@@ -61,150 +47,25 @@
 
 	// Available subjects
 	const subjects: Subject[] = [
-		{ id: 'math', name: 'Mathematics' },
+		{ id: 'cs', name: 'Computer Science' },
+		{ id: 'maths', name: 'Mathematics' },
 		{ id: 'physics', name: 'Physics' },
 		{ id: 'chemistry', name: 'Chemistry' },
 		{ id: 'biology', name: 'Biology' },
-		{ id: 'cs', name: 'Computer Science' }
+		{ id: 'english', name: 'English' },
+		{ id: 'history', name: 'History' },
+		{ id: 'geography', name: 'Geography' },
 	];
 
 	// Exam boards
 	const examBoards: ExamBoard[] = [
-		{ id: 'aqa', name: 'AQA' },
 		{ id: 'ocr', name: 'OCR' },
 		{ id: 'edexcel', name: 'Edexcel' },
-		{ id: 'cie', name: 'Cambridge (CIE)' },
-		{ id: 'wjec', name: 'WJEC' }
-	];
-
-	// Past papers data with sample questions
-	const pastPapers: Paper[] = [
-		{
-			id: 1,
-			subject: 'chemistry',
-			board: 'ocr',
-			year: 2023,
-			season: 'Summer',
-			paper: 'Paper 1',
-			url: 'https://example.com/ocr/chemistry/2023/summer/paper1.pdf',
-			questions: [
-				{ id: '1', marks: 5 },
-				{ id: '2', marks: 8 },
-				{ id: '3', marks: 6 },
-				{ id: '4', marks: 10 },
-				{ id: '5', marks: 7 },
-				{ id: '6', marks: 4 },
-				{ id: '7', marks: 12 },
-				{ id: '8', marks: 8 },
-				{ id: '9', marks: 8 },
-				{ id: '10', marks: 7 }
-			]
-		},
-		{
-			id: 2,
-			subject: 'chemistry',
-			board: 'ocr',
-			year: 2023,
-			season: 'Summer',
-			paper: 'Paper 2',
-			url: 'https://example.com/ocr/chemistry/2023/summer/paper2.pdf',
-			questions: [
-				{ id: '1', marks: 6 },
-				{ id: '2', marks: 8 },
-				{ id: '3', marks: 10 },
-				{ id: '4', marks: 5 },
-				{ id: '5', marks: 12 },
-				{ id: '6', marks: 8 },
-				{ id: '7', marks: 15 },
-				{ id: '8', marks: 8 },
-				{ id: '9', marks: 7 },
-				{ id: '10', marks: 6 }
-			]
-		},
-		{
-			id: 3,
-			subject: 'chemistry',
-			board: 'ocr',
-			year: 2022,
-			season: 'Winter',
-			paper: 'Paper 1',
-			url: 'https://example.com/ocr/chemistry/2022/winter/paper1.pdf',
-			questions: [
-				{ id: '1', marks: 5 },
-				{ id: '2', marks: 6 },
-				{ id: '3', marks: 8 },
-				{ id: '4', marks: 7 },
-				{ id: '5', marks: 10 },
-				{ id: '6', marks: 6 },
-				{ id: '7', marks: 10 },
-				{ id: '8', marks: 8 },
-				{ id: '9', marks: 8 },
-				{ id: '10', marks: 7 }
-			]
-		},
-		{
-			id: 4,
-			subject: 'chemistry',
-			board: 'ocr',
-			year: 2022,
-			season: 'Summer',
-			paper: 'Paper 1',
-			url: 'https://example.com/ocr/chemistry/2022/summer/paper1.pdf',
-			questions: [
-				{ id: '1', marks: 5 },
-				{ id: '2', marks: 7 },
-				{ id: '3', marks: 8 },
-				{ id: '4', marks: 6 },
-				{ id: '5', marks: 12 },
-				{ id: '6', marks: 6 },
-				{ id: '7', marks: 10 },
-				{ id: '8', marks: 7 },
-				{ id: '9', marks: 8 },
-				{ id: '10', marks: 6 }
-			]
-		},
-		{
-			id: 5,
-			subject: 'chemistry',
-			board: 'ocr',
-			year: 2022,
-			season: 'Summer',
-			paper: 'Paper 2',
-			url: 'https://example.com/ocr/chemistry/2022/summer/paper2.pdf',
-			questions: [
-				{ id: '1', marks: 6 },
-				{ id: '2', marks: 8 },
-				{ id: '3', marks: 10 },
-				{ id: '4', marks: 7 },
-				{ id: '5', marks: 15 },
-				{ id: '6', marks: 8 },
-				{ id: '7', marks: 12 },
-				{ id: '8', marks: 7 },
-				{ id: '9', marks: 6 },
-				{ id: '10', marks: 6 }
-			]
-		},
-		{
-			id: 6,
-			subject: 'chemistry',
-			board: 'ocr',
-			year: 2021,
-			season: 'Summer',
-			paper: 'Paper 1',
-			url: 'https://example.com/ocr/chemistry/2021/summer/paper1.pdf',
-			questions: [
-				{ id: '1', marks: 5 },
-				{ id: '2', marks: 6 },
-				{ id: '3', marks: 8 },
-				{ id: '4', marks: 7 },
-				{ id: '5', marks: 10 },
-				{ id: '6', marks: 8 },
-				{ id: '7', marks: 12 },
-				{ id: '8', marks: 8 },
-				{ id: '9', marks: 6 },
-				{ id: '10', marks: 5 }
-			]
-		}
+		{ id: 'aqa', name: 'AQA' },
+		{ id: 'ccea', name: 'CCEA' },
+		{ id: 'wjec', name: 'WJEC' },
+		{ id: 'ib', name: 'IB' },
+		{ id: 'cambridge', name: 'Cambridge' },
 	];
 
 	// Questions for selected paper (simulated)
@@ -627,6 +488,14 @@
 										<span class="open-paper-icon">📄</span> Open Paper
 									</button>
 								{/if}
+								{#if selectedPaper.markschemeUrl}
+									<button
+										class="open-paper-button open-markscheme-button"
+										onclick={() => window.open(selectedPaper?.markschemeUrl, '_blank')}
+									>
+										<span class="open-paper-icon">📋</span> Open Markscheme
+									</button>
+								{/if}
 								<button class="action-button reset" onclick={resetMarks}>Reset</button>
 							</div>
 
@@ -1047,14 +916,7 @@
 		color: inherit;
 		font-family: inherit;
 		font-size: inherit;
-	}
-
-	.paper-item:hover {
-		background-color: #2a2a2a;
-	}
-
-	.paper-item.selected {
-		background-color: #2a539e;
+		justify-content: space-between;
 	}
 
 	.paper-icon {
@@ -1068,6 +930,8 @@
 	.paper-marks {
 		color: #aaa;
 		font-size: 0.9rem;
+		margin-left: auto;
+		text-align: right;
 	}
 
 	.paper-detail {
@@ -1381,6 +1245,14 @@
 
 	.open-paper-button:hover {
 		background-color: #3a6fd1;
+	}
+	
+	.open-markscheme-button {
+		background-color: #2a7e9e;
+	}
+	
+	.open-markscheme-button:hover {
+		background-color: #3a9ed1;
 	}
 
 	.open-paper-icon {
