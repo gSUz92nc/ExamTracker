@@ -1,15 +1,16 @@
-name = "revision-tool"
-compatibility_date = "2025-03-22"
+name = "{{ project_name }}"
+account_id = "{{ account_id }}"
+compatibility_date = "{{ compatibility_date }}"
+main = "./cloudflare/worker.js"
 
-# Configure D1 Database
-[[d1_databases]]
-binding = "DB" # Available in your application as env.DB
-database_name = "scores-db"
-database_id = "REPLACE_WITH_YOUR_DATABASE_ID" # Get this ID by running: npx wrangler d1 create scores-db
+[site]
+bucket = "./.cloudflare/public"
 
-# Environment-specific configurations
 [env.production]
-# Production-specific settings go here
+name = "{{ production_name }}"
 
 [env.staging]
-# Staging-specific settings go here
+name = "{{ staging_name }}"
+
+[build]
+command = "npm run build"
