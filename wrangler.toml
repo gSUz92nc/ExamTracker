@@ -1,0 +1,15 @@
+name = "exam-tracker"
+compatibility_date = "2025-03-22"
+main = "./cloudflare/worker.js"
+
+[site]
+bucket = "./.cloudflare/public"
+
+[env.production]
+name = "exam-tracker"
+
+[env.staging]
+name= "exam-tracker-staging"
+
+[build]
+command = "npm run build"

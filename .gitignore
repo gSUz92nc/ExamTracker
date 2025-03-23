@@ -43,10 +43,6 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-# wrangler.toml should not be committed with sensitive data
-# use wrangler.toml.template as a reference
-wrangler.toml
-
 # Local database files
 .dev.db
 *.sqlite
