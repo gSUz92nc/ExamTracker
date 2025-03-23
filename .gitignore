@@ -1,0 +1,57 @@
+# Node dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Bun
+bun.lockb
+
+# Build directories
+/build
+/.svelte-kit
+/package
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Cloudflare
+.wrangler
+.dev.vars
+.cloudflare
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# wrangler.toml should not be committed with sensitive data
+# use wrangler.toml.template as a reference
+wrangler.toml
+
+# Local database files
+.dev.db
+*.sqlite
+*.sqlite3
+
+# Testing
+/coverage
+/.nyc_output

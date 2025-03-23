@@ -1,0 +1,15 @@
+name = "revision-tool"
+compatibility_date = "2025-03-22"
+
+# Configure D1 Database
+[[d1_databases]]
+binding = "DB" # Available in your application as env.DB
+database_name = "scores-db"
+database_id = "REPLACE_WITH_YOUR_DATABASE_ID" # Get this ID by running: npx wrangler d1 create scores-db
+
+# Environment-specific configurations
+[env.production]
+# Production-specific settings go here
+
+[env.staging]
+# Staging-specific settings go here
