@@ -314,7 +314,7 @@
 <div class="terminal-container">
 	<header class="terminal-header">
 		<h1>ExamTracker<span class="cursor">_</span></h1>
-		<p class="subtitle">Track your exam performance, focus on what matters</p>
+		<p class="subtitle">Track your past paper performance and progress</p>
 	</header>
 
 	<nav class="terminal-nav">
