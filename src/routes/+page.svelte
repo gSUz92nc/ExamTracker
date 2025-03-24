@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { pastPapers,  } from "$lib/pastPapers";
+	import { pastPapers } from '$lib/pastPapers';
 
-	import type { Paper, Question } from "$lib/pastPapers";
+	import type { Paper, Question } from '$lib/pastPapers';
 
 	// Define all types/interfaces
 	interface Subject {
@@ -54,7 +54,7 @@
 		{ id: 'biology', name: 'Biology' },
 		{ id: 'english', name: 'English' },
 		{ id: 'history', name: 'History' },
-		{ id: 'geography', name: 'Geography' },
+		{ id: 'geography', name: 'Geography' }
 	];
 
 	// Exam boards
@@ -65,7 +65,7 @@
 		{ id: 'ccea', name: 'CCEA' },
 		{ id: 'wjec', name: 'WJEC' },
 		{ id: 'ib', name: 'IB' },
-		{ id: 'cambridge', name: 'Cambridge' },
+		{ id: 'cambridge', name: 'Cambridge' }
 	];
 
 	// Questions for selected paper (simulated)
@@ -466,6 +466,16 @@
 							</div>
 
 							<div class="paper-score-actions">
+								{#if selectedPaper.extraResources}
+									{#each selectedPaper.extraResources as resource (resource)}
+										<button
+											class="open-paper-button"
+											onclick={() => window.open(resource.url, '_blank')}
+										>
+											<span class="open-paper-icon">📄</span> Open {resource.type}
+										</button>
+									{/each}
+								{/if}
 								{#if selectedPaper.url}
 									<button
 										class="open-paper-button"
@@ -1232,11 +1242,11 @@
 	.open-paper-button:hover {
 		background-color: #3a6fd1;
 	}
-	
+
 	.open-markscheme-button {
 		background-color: #2a7e9e;
 	}
-	
+
 	.open-markscheme-button:hover {
 		background-color: #3a9ed1;
 	}

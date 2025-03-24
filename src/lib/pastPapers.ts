@@ -2,6 +2,7 @@ export interface Paper {
 	id: number;
 	subject: string;
 	board: string;
+	extraResources?: ExtraResources[];
 	year: number;
 	season: string;
 	paper: string;
@@ -15,6 +16,11 @@ export interface Question {
 	id: string; // Changed from number to string to support formats like "1a", "1.2", etc.
 	marks: number;
 	displayName?: string; // Optional display name if different from id
+}
+
+export interface ExtraResources {
+	type: string;
+	url: string;
 }
 
 export const pastPapers: Paper[] = [
@@ -802,6 +808,12 @@ export const pastPapers: Paper[] = [
 		id: 15,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/1 Physics Paper 1',
@@ -867,6 +879,12 @@ export const pastPapers: Paper[] = [
 		id: 16,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/2 Physics Paper 2',
@@ -934,6 +952,12 @@ export const pastPapers: Paper[] = [
 		id: 22,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/3A Physics Paper 3 Section A',
@@ -967,6 +991,12 @@ export const pastPapers: Paper[] = [
 		id: 17,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/3BE Electronics',
@@ -997,6 +1027,12 @@ export const pastPapers: Paper[] = [
 		id: 18,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/3BD Turning points in physics',
@@ -1025,6 +1061,12 @@ export const pastPapers: Paper[] = [
 		id: 19,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/3BC Engineering physics',
@@ -1055,6 +1097,12 @@ export const pastPapers: Paper[] = [
 		id: 20,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/3BB Medical physics',
@@ -1083,6 +1131,12 @@ export const pastPapers: Paper[] = [
 		id: 21,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2023,
 		season: 'Summer',
 		paper: '7408/3BA Astrophysics',
@@ -1113,11 +1167,18 @@ export const pastPapers: Paper[] = [
 		id: 23,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2022,
 		season: 'Summer',
 		paper: '7408/1 Physics Paper 1',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2022/june/AQA-74081-QP-JUN22.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2022/june/AQA-74081-MS-JUN22.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2022/june/AQA-74081-MS-JUN22.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 2 },
@@ -1179,11 +1240,18 @@ export const pastPapers: Paper[] = [
 		id: 24,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2022,
 		season: 'Summer',
 		paper: '7408/2 Physics Paper 2',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2022/june/AQA-74082-QP-JUN22.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2022/june/AQA-74082-MS-JUN22.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2022/june/AQA-74082-MS-JUN22.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 3 },
@@ -1242,6 +1310,12 @@ export const pastPapers: Paper[] = [
 		id: 25,
 		subject: 'physics',
 		board: 'aqa',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://filestore.aqa.org.uk/resources/physics/AQA-7408-SDB.PDF'
+			}
+		],
 		year: 2022,
 		season: 'Summer',
 		paper: '7408/3A Physics Paper 3 Section A',
@@ -1267,5 +1341,5 @@ export const pastPapers: Paper[] = [
 			{ id: '4.7', marks: 2 }
 		],
 		totalMarks: 45
-	},
+	}
 ];
