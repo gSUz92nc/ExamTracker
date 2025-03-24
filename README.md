@@ -72,7 +72,6 @@ The application is designed to work with Cloudflare Workers for easy deployment,
 
 ## Future Plans
 
-- **Paper Import**: Ability to import paper information from PDF files
 - **Possible Online Saving**: You will be able to access your data across all devices
 
 
