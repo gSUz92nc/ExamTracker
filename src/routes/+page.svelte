@@ -524,15 +524,15 @@
 										<span class="col question-marks">{question.marks}</span>
 										<span class="col question-your-mark">
 											<div class="mark-buttons">
-												{#each Array(question.marks + 1) as _, i (i)}
-													<button
-														class="mark-button"
-														class:selected={userMarks[`${selectedPaper.id}-${question.id}`] === i}
-														onclick={() => updateMark(question.id, i)}
-													>
-														{i}
-													</button>
-												{/each}
+											{#each Array.from({length: question.marks + 1}, (_, i) => i) as i (i)}
+												<button
+													class="mark-button"
+													class:selected={userMarks[`${selectedPaper.id}-${question.id}`] === i}
+													onclick={() => updateMark(question.id, i)}
+												>
+													{i}
+												</button>
+											{/each}
 											</div>
 										</span>
 									</div>
