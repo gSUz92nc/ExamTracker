@@ -225,20 +225,6 @@
 		}
 	}
 
-	// Save all marks for current paper
-	function saveMarks(): void {
-		if (selectedPaper) {
-			console.log('Saving marks for paper:', selectedPaper.id);
-			console.log('Marks:', userMarks);
-
-			// Save to localStorage
-			saveToLocalStorage();
-
-			// Show success message
-			alert('Your marks have been saved successfully!');
-		}
-	}
-
 	// Reset marks for current paper
 	function resetMarks(): void {
 		if (selectedPaper) {
@@ -352,7 +338,7 @@
 						<div class="section">
 							<div class="section-title">Choose a subject:</div>
 							<div class="options">
-								{#each subjects as subject}
+								{#each subjects as subject (subject.id)}
 									<button
 										class="option"
 										class:selected={selectedSubject === subject.id}
@@ -368,7 +354,7 @@
 							<div class="section">
 								<div class="section-title">Choose an exam board:</div>
 								<div class="options">
-									{#each examBoards as board}
+									{#each examBoards as board (board.id)}
 										<button
 											class="option"
 											class:selected={selectedBoard === board.id}
@@ -402,7 +388,7 @@
 								{#if Object.keys(groupedPapers).length === 0}
 									<div class="no-results">No papers found. Try different search criteria.</div>
 								{:else}
-									{#each Object.entries(groupedPapers) as [group, papers]}
+									{#each Object.entries(groupedPapers) as [group, papers] (group)}
 										<div class="paper-group">
 											<div class="group-title">{group}</div>
 											<ul class="paper-items">
@@ -439,7 +425,7 @@
 									<span class="subject-name">{findSubjectName(selectedSubject)}</span>
 								</div>
 
-								{#each Object.entries(groupedPapers) as [group, papers]}
+								{#each Object.entries(groupedPapers) as [group, papers] (group)}
 									<div class="paper-group">
 										<div class="group-title">{group}</div>
 										<ul class="paper-items">
@@ -522,13 +508,13 @@
 									<span class="col question-your-mark">Your Mark</span>
 								</div>
 
-								{#each questions as question}
+								{#each questions as question (question.id)}
 									<div class="question-row">
 										<span class="col question-num">{question.id}</span>
 										<span class="col question-marks">{question.marks}</span>
 										<span class="col question-your-mark">
 											<div class="mark-buttons">
-												{#each Array(question.marks + 1) as _, i}
+												{#each Array(question.marks + 1) as _, i (i)}
 													<button
 														class="mark-button"
 														class:selected={userMarks[`${selectedPaper.id}-${question.id}`] === i}
@@ -588,7 +574,7 @@
 						<p class="no-weak-papers">No weak papers found. Great job!</p>
 					{:else}
 						<ul class="weak-papers-list">
-							{#each weakPapers as paper}
+							{#each weakPapers as paper (paper.id)}
 								<li class="weak-paper-item">
 									<div class="weak-paper-info">
 										<span class="weak-paper-name"
