@@ -1,57 +1,62 @@
 # ExamTracker
 
-## Database Setup (D1) - WIP (copy pasted for future reference)
+ExamTracker is a modern web application designed to help students track their performance on past examination papers. With an intuitive terminal-inspired interface, it allows users to record, analyze, and improve their exam preparation.
 
-This project uses Cloudflare D1 as its database. The schema includes a `scores` table with a text ID as the primary key and a score column (integer) with a default value of 0.
+![ExamTracker Screenshot](static/screenshot.png)
 
-### Setting up D1 Database
+## Features
 
-1. Create your D1 database using Wrangler CLI:
+- **Paper Tracking**: Log your scores for individual questions on past papers
+- **Subject & Exam Board Organization**: Filter papers by subject and examination board
+- **Performance Analysis**: View your average scores and identify weak areas
+- **Local Storage**: All data is stored locally in your browser for privacy
+- **Export Functionality**: Export your data for backup or transfer between devices
+- **Terminal-Inspired UI**: Clean, distraction-free interface designed for focus
 
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [Bun](https://bun.sh/) (optional, for faster package management)
+
+### Installation
+
+1. Clone the repository:
    ```bash
-   npx wrangler d1 create scores-db
+   git clone https://github.com/gSUz92nc/ExamTracker.git
+   cd ExamTracker
    ```
 
-   This will generate a database ID that you'll need for the next step.
-
-2. Update your `wrangler.toml` with the actual database ID:
-
-   ```toml
-   [[d1_databases]]
-   binding = "DB"
-   database_name = "scores-db"
-   database_id = "<your-database-id>" # Replace with your actual D1 database ID
-   ```
-
-3. Apply the schema to your D1 database:
+2. Install dependencies:
    ```bash
-   npx wrangler d1 execute scores-db --file=./migrations/schema.sql
+   # Using npm
+   npm install
+   
+   # Or using Bun
+   bun install
    ```
 
-### Local Development with D1
+3. Start the development server:
+   ```bash
+   # Using npm
+   npm run dev
+   
+   # Or using Bun
+   bun run dev
+   ```
 
-To test locally with D1 database access:
+4. Open your browser and navigate to `http://localhost:5173`
 
-```bash
-npx wrangler pages dev -- npm run dev
-```
+## Usage
 
-### Using the Database
+1. **Select a Subject**: Choose from available subjects like Computer Science, Mathematics, etc.
+2. **Choose an Exam Board**: Select the relevant examination board (OCR, AQA, Edexcel, etc.)
+3. **Browse Papers**: View available past papers organized by year and season
+4. **Mark Your Answers**: Select a paper and record your score for each question
+5. **Analyze Performance**: Track your progress and identify areas for improvement
 
-The project includes database utilities in `src/lib/db.ts` to interact with the D1 database:
-
-```typescript
-// Get a specific score
-const score = await getScore('user123');
-
-// Get all scores
-const allScores = await getAllScores();
-
-// Save or update a score
-await saveScore('user123', 42);
-```
-
-## Building
+## Building for Production
 
 To create a production version of your app:
 
@@ -61,12 +66,26 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-### Deploying with D1
+## Deployment
 
-To deploy your application with D1 to Cloudflare Pages:
+The application is designed to work with Cloudflare Workers for easy deployment, although I'm sure you could use many other platforms
 
-```bash
-npx wrangler pages deploy .svelte-kit/cloudflare
-```
+## Future Plans
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- **Paper Import**: Ability to import paper information from PDF files
+- **Possible Online Saving**: You will be able to access your data across all devices
+
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with [SvelteKit](https://kit.svelte.dev/)
+- Deployed with [Cloudflare Workers](https://workers.cloudflare.com/)
+- Terminal-inspired styling based on modern command-line interfaces
