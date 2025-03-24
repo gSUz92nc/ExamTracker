@@ -240,9 +240,15 @@
 	}
 
 	// Switch between tabs
-	function setActiveTab(tab: 'papers' | 'performance' | 'settings'): void {
+	function setActiveTab(tab: 'papers' | 'performance' | 'settings', paperToShow?: Paper): void {
 		activeTab = tab;
 		showExportedData = false; // Hide export data when switching tabs
+		
+		if (paperToShow) {
+			selectedSubject = paperToShow.subject;
+			selectedBoard = paperToShow.board;
+			selectPaper(paperToShow);
+		}
 	}
 
 	// Get paper score data
@@ -592,11 +598,18 @@
 										>
 										<span class="weak-paper-score">{getPaperScoreData(paper.id).percentage}%</span>
 									</div>
-									<div class="weak-paper-bar">
-										<div
-											class="weak-paper-progress"
-											style="width: {getPaperScoreData(paper.id).percentage}%"
-										></div>
+									<div class="weak-paper-actions">
+										<div class="weak-paper-bar">
+											<div
+												class="weak-paper-progress"
+												style="width: {getPaperScoreData(paper.id).percentage}%"
+											></div>
+										</div>
+										<button class="review-paper-button" onclick={() => {
+											setActiveTab('papers', paper);
+										}}>
+											Review Paper
+										</button>
 									</div>
 								</li>
 							{/each}
@@ -1157,16 +1170,40 @@
 		color: #ff6e67;
 	}
 
+	.weak-paper-actions {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 10px;
+	}
+
 	.weak-paper-bar {
 		height: 8px;
 		background-color: #1e1e1e;
 		border-radius: 4px;
 		overflow: hidden;
+		flex-grow: 1;
+		margin-right: 10px;
 	}
 
 	.weak-paper-progress {
 		height: 100%;
 		background-color: #9e2a2a;
+	}
+
+	.review-paper-button {
+		background-color: #2a539e;
+		border: none;
+		color: white;
+		padding: 6px 12px;
+		border-radius: 4px;
+		font-family: 'Courier New', monospace;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+
+	.review-paper-button:hover {
+		background-color: #3a6fd1;
 	}
 
 	/* Settings tab styles */
