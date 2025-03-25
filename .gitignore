@@ -20,6 +20,7 @@ bun.lockb
 .wrangler
 .dev.vars
 .cloudflare
+/cloudflare
 
 # Logs
 logs

@@ -45,6 +45,19 @@
 	let exportedData = $state<string>('');
 	let showExportedData = $state<boolean>(false);
 
+	let apiTestUserId = $state<string>('');
+	let apiTestPaperId = $state<string>('');
+	let apiResponse = $state<string | null>(null);
+	let apiError = $state<string | null>(null);
+
+	// Add POST API test variables
+	let postUserId = $state<string>('');
+	let postPaperId = $state<string>('');
+	let postQuestionId = $state<string>('');
+	let postScore = $state<string>('');
+	let postResponse = $state<string | null>(null);
+	let postError = $state<string | null>(null);
+
 	// Available subjects
 	const subjects: Subject[] = [
 		{ id: 'cs', name: 'Computer Science' },
@@ -89,6 +102,61 @@
 			}
 		}
 	};
+
+	// Add this function to test the API endpoint
+	async function testApiEndpoint() {
+		apiResponse = null;
+		apiError = null;
+
+		if (!apiTestUserId || !apiTestPaperId) {
+			apiError = 'Please enter both User ID and Paper ID';
+			return;
+		}
+
+		try {
+			const response = await fetch(
+				`/api?user_id=${encodeURIComponent(apiTestUserId)}&paper_id=${encodeURIComponent(apiTestPaperId)}`
+			);
+
+			const data = await response.json();
+			apiResponse = JSON.stringify(data, null, 2);
+		} catch (error) {
+			apiError = error instanceof Error ? error.message : 'An unknown error occurred';
+		}
+	}
+
+	// Add function to test POST API endpoint
+	async function testPostApiEndpoint() {
+		postResponse = null;
+		postError = null;
+		
+		if (!postUserId || !postPaperId || !postScore) {
+			postError = 'Please enter User ID, Paper ID, and Score';
+			return;
+		}
+		
+		try {
+			const payload = {
+				user_id: postUserId,
+				paper_id: postPaperId,
+				score: postScore,
+				question_id: postQuestionId
+			};
+			
+			const response = await fetch('/api', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(payload)
+			});
+			
+			const data = await response.json();
+			postResponse = JSON.stringify(data, null, 2);
+		} catch (error) {
+			postError = error instanceof Error ? error.message : 'An unknown error occurred';
+		}
+	}
 
 	// Save data to localStorage
 	const saveToLocalStorage = () => {
@@ -243,7 +311,7 @@
 	function setActiveTab(tab: 'papers' | 'performance' | 'settings', paperToShow?: Paper): void {
 		activeTab = tab;
 		showExportedData = false; // Hide export data when switching tabs
-		
+
 		if (paperToShow) {
 			selectedSubject = paperToShow.subject;
 			selectedBoard = paperToShow.board;
@@ -530,15 +598,15 @@
 										<span class="col question-marks">{question.marks}</span>
 										<span class="col question-your-mark">
 											<div class="mark-buttons">
-											{#each Array.from({length: question.marks + 1}, (_, i) => i) as i (i)}
-												<button
-													class="mark-button"
-													class:selected={userMarks[`${selectedPaper.id}-${question.id}`] === i}
-													onclick={() => updateMark(question.id, i)}
-												>
-													{i}
-												</button>
-											{/each}
+												{#each Array.from({ length: question.marks + 1 }, (_, i) => i) as i (i)}
+													<button
+														class="mark-button"
+														class:selected={userMarks[`${selectedPaper.id}-${question.id}`] === i}
+														onclick={() => updateMark(question.id, i)}
+													>
+														{i}
+													</button>
+												{/each}
 											</div>
 										</span>
 									</div>
@@ -605,9 +673,12 @@
 												style="width: {getPaperScoreData(paper.id).percentage}%"
 											></div>
 										</div>
-										<button class="review-paper-button" onclick={() => {
-											setActiveTab('papers', paper);
-										}}>
+										<button
+											class="review-paper-button"
+											onclick={() => {
+												setActiveTab('papers', paper);
+											}}
+										>
 											Review Paper
 										</button>
 									</div>
@@ -650,7 +721,107 @@
 							</div>
 						</div>
 					{/if}
-				</div>
+
+					<h3>API Testing</h3>
+					<div class="api-test-form">
+						<div class="form-group">
+							<label for="userId">User ID:</label>
+							<input
+								type="text"
+								id="userId"
+								placeholder="Enter user ID"
+								bind:value={apiTestUserId}
+								class="search-input"
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="paperId">Paper ID:</label>
+							<input
+								type="text"
+								id="paperId"
+								placeholder="Enter paper ID"
+								bind:value={apiTestPaperId}
+								class="search-input"
+							/>
+						</div>
+
+						<button class="action-button" onclick={testApiEndpoint}>Test GET API</button>
+					</div>
+
+					{#if apiResponse}
+						<div class="api-response-container">
+							<h4>API Response:</h4>
+							<pre class="exported-json">{apiResponse}</pre>
+						</div>
+					{/if}
+
+					{#if apiError}
+						<div class="api-error">
+							<h4>Error:</h4>
+							<p>{apiError}</p>
+						</div>
+					{/if}
+
+					<h3>Insert Data API Testing</h3>
+					<div class="api-test-form"></div>
+						<div class="form-group">
+							<label for="postUserId">User ID:</label>
+							<input
+								type="text"
+								id="postUserId"
+								placeholder="Enter user ID"
+								bind:value={postUserId}
+								class="search-input"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="postPaperId">Paper ID:</label>
+							<input
+								type="text"
+								id="postPaperId"
+								placeholder="Enter paper ID"
+								bind:value={postPaperId}
+								class="search-input"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="postScoreId">Score ID (optional):</label>
+							<input
+								type="text"
+								id="postScoreId"
+								placeholder="Enter score ID (optional)"
+								bind:value={postQuestionId}
+								class="search-input"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="postScore">Score:</label>
+							<input
+								type="text"
+								id="postScore"
+								placeholder="Enter score"
+								bind:value={postScore}
+								class="search-input"
+							/>
+						</div>
+						<button class="action-button" onclick={testPostApiEndpoint}>Insert Data</button>
+					</div>
+
+					{#if postResponse}
+						<div class="api-response-container">
+							<h4>Insert API Response:</h4>
+							<pre class="exported-json">{postResponse}</pre>
+						</div>
+					{/if}
+
+					{#if postError}
+						<div class="api-error">
+							<h4>Error:</h4>
+							<p>{postError}</p>
+						</div>
+					{/if}
+
 			</div>
 		{/if}
 	</main>
@@ -1290,5 +1461,36 @@
 
 	.open-paper-icon {
 		font-size: 1.1rem;
+	}
+
+	.api-test-form {
+		margin-bottom: 20px;
+	}
+
+	.form-group {
+		margin-bottom: 10px;
+	}
+
+	.form-group label {
+		display: block;
+		margin-bottom: 5px;
+		color: #57c7ff;
+	}
+
+	.api-response-container {
+		margin-top: 15px;
+	}
+
+	.api-error {
+		margin-top: 15px;
+		padding: 10px;
+		background-color: rgba(158, 42, 42, 0.2);
+		border-left: 4px solid #9e2a2a;
+		border-radius: 4px;
+	}
+
+	.api-error h4 {
+		margin-top: 0;
+		color: #ff6e67;
 	}
 </style>
