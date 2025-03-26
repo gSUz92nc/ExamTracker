@@ -299,7 +299,6 @@
 	// Switch between tabs
 	function setActiveTab(tab: 'papers' | 'performance' | 'settings', paperToShow?: Paper): void {
 		activeTab = tab;
-		showExportedData = false; // Hide export data when switching tabs
 
 		if (paperToShow) {
 			selectedSubject = paperToShow.subject;
