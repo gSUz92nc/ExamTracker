@@ -36,19 +36,9 @@
 	let selectedBoard = $state<string | null>(null);
 	let selectedPaper = $state<Paper | null>(null);
 	let activeTab = $state<'papers' | 'performance' | 'settings'>('papers');
-	let exportedData = $state<string>('');
-	let showExportedData = $state<boolean>(false);
 	let userId = $state<string>('');
 	let loadingScores = $state<boolean>(false);
 	let apiError = $state<string | null>(null);
-
-	// Add POST API test variables
-	let postUserId = $state<string>('');
-	let postPaperId = $state<string>('');
-	let postQuestionId = $state<string>('');
-	let postScore = $state<string>('');
-	let postResponse = $state<string | null>(null);
-	let postError = $state<string | null>(null);
 
 	// Questions for selected paper (simulated)
 	let questions = $state<Question[]>([]);
@@ -168,75 +158,6 @@
 			console.error('Error saving score:', apiError);
 		}
 	}
-
-	// Clear all scores from the API
-	async function clearAllScoresFromApi() {
-		if (!userId) {
-			apiError = 'Please set your User ID in the Settings tab';
-			return;
-		}
-
-		if (!confirm('Are you sure you want to clear all saved scores? This cannot be undone.')) {
-			return;
-		}
-
-		try {
-			const response = await fetch(`/api?user_id=${encodeURIComponent(userId)}`, {
-				method: 'DELETE'
-			});
-
-			await response.json();
-			userMarks = {}; // Clear local cache
-			alert('All scores have been cleared.');
-		} catch (error) {
-			apiError = error instanceof Error ? error.message : 'Failed to clear scores';
-			console.error('Error clearing scores:', apiError);
-		}
-	}
-
-	// Add function to test POST API endpoint
-	async function testPostApiEndpoint() {
-		postResponse = null;
-		postError = null;
-
-		if (!postUserId || !postPaperId || !postScore) {
-			postError = 'Please enter User ID, Paper ID, and Score';
-			return;
-		}
-
-		try {
-			const payload = {
-				user_id: postUserId,
-				paper_id: postPaperId,
-				score: postScore,
-				question_id: postQuestionId
-			};
-
-			const response = await fetch('/api', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(payload)
-			});
-
-			const data = await response.json();
-			postResponse = JSON.stringify(data, null, 2);
-		} catch (error) {
-			postError = error instanceof Error ? error.message : 'An unknown error occurred';
-		}
-	}
-
-	// Export all data as JSON
-	const exportData = () => {
-		const data = {
-			userMarks,
-			userId,
-			lastUpdated: new Date().toISOString()
-		};
-		exportedData = JSON.stringify(data, null, 2);
-		showExportedData = true;
-	};
 
 	// Load user ID on component initialization (browser-only)
 	if (typeof window !== 'undefined') {
@@ -799,96 +720,6 @@
 					{#if userId}
 						<div class="user-id-info">
 							<p>Your current User ID: <strong>{userId}</strong></p>
-						</div>
-					{/if}
-				</div>
-
-				<div class="settings-section">
-					<h3>Data Management</h3>
-					<div class="settings-actions">
-						<button class="action-button" onclick={exportData}>Export your data</button>
-						<button class="action-button reset" onclick={clearAllScoresFromApi}
-							>Clear all saved scores</button
-						>
-					</div>
-
-					{#if showExportedData}
-						<div class="export-container">
-							<h4>Your Exported Data:</h4>
-							<pre class="exported-json">{exportedData}</pre>
-							<div class="export-actions">
-								<button
-									class="action-button small"
-									onclick={() => {
-										navigator.clipboard.writeText(exportedData);
-										alert('Data copied to clipboard!');
-									}}
-								>
-									Copy to Clipboard
-								</button>
-								<button class="action-button small" onclick={() => (showExportedData = false)}>
-									Hide Data
-								</button>
-							</div>
-						</div>
-					{/if}
-
-					<h3>API Testing</h3>
-					<div class="api-test-form">
-						<div class="form-group">
-							<label for="postUserId">User ID:</label>
-							<input
-								type="text"
-								id="postUserId"
-								placeholder="Enter user ID"
-								bind:value={postUserId}
-								class="search-input"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="postPaperId">Paper ID:</label>
-							<input
-								type="text"
-								id="postPaperId"
-								placeholder="Enter paper ID"
-								bind:value={postPaperId}
-								class="search-input"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="postScoreId">Question ID (optional):</label>
-							<input
-								type="text"
-								id="postScoreId"
-								placeholder="Enter question ID (optional)"
-								bind:value={postQuestionId}
-								class="search-input"
-							/>
-						</div>
-						<div class="form-group">
-							<label for="postScore">Score:</label>
-							<input
-								type="text"
-								id="postScore"
-								placeholder="Enter score"
-								bind:value={postScore}
-								class="search-input"
-							/>
-						</div>
-						<button class="action-button" onclick={testPostApiEndpoint}>Insert Data</button>
-					</div>
-
-					{#if postResponse}
-						<div class="api-response-container">
-							<h4>Insert API Response:</h4>
-							<pre class="exported-json">{postResponse}</pre>
-						</div>
-					{/if}
-
-					{#if postError}
-						<div class="api-error">
-							<h4>Error:</h4>
-							<p>{postError}</p>
 						</div>
 					{/if}
 				</div>
