@@ -27,14 +27,8 @@
 		[key: string]: Paper[];
 	}
 
-	// Local storage data structure
-	interface StoredData {
-		userMarks: UserMarks;
-		lastUpdated: string;
-	}
-
 	// Storage key for localStorage
-	const STORAGE_KEY = 'examtracker_data';
+	const USER_ID_KEY = 'examtracker_user_id';
 
 	// State variables
 	let searchQuery = $state<string>('');
@@ -44,10 +38,8 @@
 	let activeTab = $state<'papers' | 'performance' | 'settings'>('papers');
 	let exportedData = $state<string>('');
 	let showExportedData = $state<boolean>(false);
-
-	let apiTestUserId = $state<string>('');
-	let apiTestPaperId = $state<string>('');
-	let apiResponse = $state<string | null>(null);
+	let userId = $state<string>('');
+	let loadingScores = $state<boolean>(false);
 	let apiError = $state<string | null>(null);
 
 	// Add POST API test variables
@@ -57,6 +49,12 @@
 	let postScore = $state<string>('');
 	let postResponse = $state<string | null>(null);
 	let postError = $state<string | null>(null);
+
+	// Questions for selected paper (simulated)
+	let questions = $state<Question[]>([]);
+
+	// User's marks for questions
+	let userMarks = $state<UserMarks>({});
 
 	// Available subjects
 	const subjects: Subject[] = [
@@ -81,68 +79,80 @@
 		{ id: 'cambridge', name: 'Cambridge' }
 	];
 
-	// Questions for selected paper (simulated)
-	let questions = $state<Question[]>([]);
-
-	// User's marks for questions (simulated)
-	let userMarks = $state<UserMarks>({});
-
-	// Load data from localStorage on component initialization
-	const loadFromLocalStorage = () => {
+	// Load user ID from localStorage on component initialization
+	const loadUserIdFromLocalStorage = () => {
 		if (typeof window !== 'undefined') {
 			try {
-				const storedData = localStorage.getItem(STORAGE_KEY);
-				if (storedData) {
-					const parsedData: StoredData = JSON.parse(storedData);
-					userMarks = parsedData.userMarks;
-					console.log('Data loaded from localStorage', parsedData.lastUpdated);
+				const storedUserId = localStorage.getItem(USER_ID_KEY);
+				if (storedUserId) {
+					userId = storedUserId;
+					console.log('User ID loaded from localStorage');
 				}
 			} catch (error) {
-				console.error('Failed to load data from localStorage:', error);
+				console.error('Failed to load user ID from localStorage:', error);
 			}
 		}
 	};
 
-	// Add this function to test the API endpoint
-	async function testApiEndpoint() {
-		apiResponse = null;
-		apiError = null;
+	// Save user ID to localStorage
+	const saveUserIdToLocalStorage = () => {
+		if (typeof window !== 'undefined') {
+			try {
+				localStorage.setItem(USER_ID_KEY, userId);
+				console.log('User ID saved to localStorage');
+			} catch (error) {
+				console.error('Failed to save user ID to localStorage:', error);
+			}
+		}
+	};
 
-		if (!apiTestUserId || !apiTestPaperId) {
-			apiError = 'Please enter both User ID and Paper ID';
+	// Load scores for a specific paper from API
+	async function loadPaperScores(paperId: number) {
+		if (!userId) {
+			apiError = 'Please set your User ID in the Settings tab';
 			return;
 		}
+
+		loadingScores = true;
+		apiError = null;
 
 		try {
 			const response = await fetch(
-				`/api?user_id=${encodeURIComponent(apiTestUserId)}&paper_id=${encodeURIComponent(apiTestPaperId)}`
+				`/api?user_id=${encodeURIComponent(userId)}&paper_id=${encodeURIComponent(paperId.toString())}`
 			);
 
 			const data = await response.json();
-			apiResponse = JSON.stringify(data, null, 2);
+
+			if (data && Array.isArray(data)) {
+				// Map the API response to userMarks format
+				data.forEach((item) => {
+					const key = `${paperId}-${item.question_id}`;
+					userMarks[key] = parseInt(item.score) || 0;
+				});
+			}
+
+			loadingScores = false;
 		} catch (error) {
 			apiError = error instanceof Error ? error.message : 'An unknown error occurred';
+			loadingScores = false;
 		}
 	}
 
-	// Add function to test POST API endpoint
-	async function testPostApiEndpoint() {
-		postResponse = null;
-		postError = null;
-		
-		if (!postUserId || !postPaperId || !postScore) {
-			postError = 'Please enter User ID, Paper ID, and Score';
+	// Save scores for a question to API
+	async function saveScoreToApi(paperId: number, questionId: string, score: number) {
+		if (!userId) {
+			apiError = 'Please set your User ID in the Settings tab';
 			return;
 		}
-		
+
 		try {
 			const payload = {
-				user_id: postUserId,
-				paper_id: postPaperId,
-				score: postScore,
-				question_id: postQuestionId
+				user_id: userId,
+				paper_id: paperId.toString(),
+				question_id: questionId,
+				score: score.toString()
 			};
-			
+
 			const response = await fetch('/api', {
 				method: 'POST',
 				headers: {
@@ -150,7 +160,66 @@
 				},
 				body: JSON.stringify(payload)
 			});
-			
+
+			await response.json();
+			// No need to update userMarks here as we already updated it in updateMark
+		} catch (error) {
+			apiError = error instanceof Error ? error.message : 'Failed to save score';
+			console.error('Error saving score:', apiError);
+		}
+	}
+
+	// Clear all scores from the API
+	async function clearAllScoresFromApi() {
+		if (!userId) {
+			apiError = 'Please set your User ID in the Settings tab';
+			return;
+		}
+
+		if (!confirm('Are you sure you want to clear all saved scores? This cannot be undone.')) {
+			return;
+		}
+
+		try {
+			const response = await fetch(`/api?user_id=${encodeURIComponent(userId)}`, {
+				method: 'DELETE'
+			});
+
+			await response.json();
+			userMarks = {}; // Clear local cache
+			alert('All scores have been cleared.');
+		} catch (error) {
+			apiError = error instanceof Error ? error.message : 'Failed to clear scores';
+			console.error('Error clearing scores:', apiError);
+		}
+	}
+
+	// Add function to test POST API endpoint
+	async function testPostApiEndpoint() {
+		postResponse = null;
+		postError = null;
+
+		if (!postUserId || !postPaperId || !postScore) {
+			postError = 'Please enter User ID, Paper ID, and Score';
+			return;
+		}
+
+		try {
+			const payload = {
+				user_id: postUserId,
+				paper_id: postPaperId,
+				score: postScore,
+				question_id: postQuestionId
+			};
+
+			const response = await fetch('/api', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(payload)
+			});
+
 			const data = await response.json();
 			postResponse = JSON.stringify(data, null, 2);
 		} catch (error) {
@@ -158,47 +227,20 @@
 		}
 	}
 
-	// Save data to localStorage
-	const saveToLocalStorage = () => {
-		if (typeof window !== 'undefined') {
-			try {
-				const data: StoredData = {
-					userMarks,
-					lastUpdated: new Date().toISOString()
-				};
-				localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-				console.log('Data saved to localStorage');
-			} catch (error) {
-				console.error('Failed to save data to localStorage:', error);
-			}
-		}
-	};
-
 	// Export all data as JSON
 	const exportData = () => {
-		const data: StoredData = {
+		const data = {
 			userMarks,
+			userId,
 			lastUpdated: new Date().toISOString()
 		};
 		exportedData = JSON.stringify(data, null, 2);
 		showExportedData = true;
 	};
 
-	// Clear all saved data
-	const clearAllData = () => {
-		if (
-			typeof window !== 'undefined' &&
-			confirm('Are you sure you want to clear all saved scores? This cannot be undone.')
-		) {
-			localStorage.removeItem(STORAGE_KEY);
-			userMarks = {};
-			alert('All scores have been cleared.');
-		}
-	};
-
-	// Load data on component initialization (browser-only)
+	// Load user ID on component initialization (browser-only)
 	if (typeof window !== 'undefined') {
-		loadFromLocalStorage();
+		loadUserIdFromLocalStorage();
 	}
 
 	let filteredPapers = $derived(
@@ -265,11 +307,15 @@
 	function selectPaper(paper: Paper): void {
 		selectedPaper = paper;
 		loadQuestions(paper);
+
+		if (userId) {
+			loadPaperScores(paper.id);
+		}
 	}
 
 	// Load questions for selected paper
 	function loadQuestions(paper: Paper): void {
-		// Use the questions from the paper object instead of generating them
+		// Use the questions from the paper object
 		questions = paper.questions;
 
 		// Initialize user marks for each question if not already set
@@ -288,8 +334,12 @@
 			userMarks[key] = parseInt(mark.toString()) || 0;
 			userMarks = userMarks; // Trigger reactivity
 
-			// Save automatically when marks are updated
-			saveToLocalStorage();
+			// Save to API
+			if (userId) {
+				saveScoreToApi(selectedPaper.id, questionId, mark);
+			} else {
+				apiError = 'Please set your User ID in the Settings tab to save scores';
+			}
 		}
 	}
 
@@ -299,11 +349,29 @@
 			questions.forEach((q) => {
 				const key = `${selectedPaper!.id}-${q.id}`;
 				userMarks[key] = 0;
+
+				// Save zeros to API
+				if (userId) {
+					saveScoreToApi(selectedPaper.id, q.id, 0);
+				}
 			});
 			userMarks = userMarks; // Trigger reactivity
+		}
+	}
 
-			// Save changes to localStorage
-			saveToLocalStorage();
+	// Save user ID and attempt to load any existing scores
+	function saveUserId(): void {
+		if (!userId.trim()) {
+			alert('Please enter a valid User ID');
+			return;
+		}
+
+		saveUserIdToLocalStorage();
+		alert('User ID saved successfully!');
+
+		// If there's a selected paper, load scores for it
+		if (selectedPaper) {
+			loadPaperScores(selectedPaper.id);
 		}
 	}
 
@@ -569,6 +637,17 @@
 								<button class="action-button reset" onclick={resetMarks}>Reset</button>
 							</div>
 
+							{#if apiError}
+								<div class="api-error">
+									<h4>Error:</h4>
+									<p>{apiError}</p>
+								</div>
+							{/if}
+
+							{#if loadingScores}
+								<div class="loading-message">Loading scores...</div>
+							{/if}
+
 							<div class="paper-analysis">
 								<div
 									class="analysis-message"
@@ -693,10 +772,42 @@
 				<h2>Settings</h2>
 
 				<div class="settings-section">
+					<h3>User Identification</h3>
+					<p>Set your User ID to save and sync your scores across devices.</p>
+
+					<div class="security-warning">
+						<div class="warning-icon">⚠️</div>
+						<div class="warning-text">
+							<strong>Security Notice:</strong> Your User ID functions like a password. Anyone with this
+							ID can view and modify your data. Use a unique, hard-to-guess value and don't share it
+							with others.
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="userId">Your User ID:</label>
+						<input
+							type="text"
+							id="userId"
+							placeholder="Enter a unique user ID"
+							bind:value={userId}
+							class="search-input"
+						/>
+					</div>
+					<button class="action-button" onclick={saveUserId}>Save User ID</button>
+
+					{#if userId}
+						<div class="user-id-info">
+							<p>Your current User ID: <strong>{userId}</strong></p>
+						</div>
+					{/if}
+				</div>
+
+				<div class="settings-section">
 					<h3>Data Management</h3>
 					<div class="settings-actions">
 						<button class="action-button" onclick={exportData}>Export your data</button>
-						<button class="action-button reset" onclick={clearAllData}
+						<button class="action-button reset" onclick={clearAllScoresFromApi}
 							>Clear all saved scores</button
 						>
 					</div>
@@ -725,47 +836,6 @@
 					<h3>API Testing</h3>
 					<div class="api-test-form">
 						<div class="form-group">
-							<label for="userId">User ID:</label>
-							<input
-								type="text"
-								id="userId"
-								placeholder="Enter user ID"
-								bind:value={apiTestUserId}
-								class="search-input"
-							/>
-						</div>
-
-						<div class="form-group">
-							<label for="paperId">Paper ID:</label>
-							<input
-								type="text"
-								id="paperId"
-								placeholder="Enter paper ID"
-								bind:value={apiTestPaperId}
-								class="search-input"
-							/>
-						</div>
-
-						<button class="action-button" onclick={testApiEndpoint}>Test GET API</button>
-					</div>
-
-					{#if apiResponse}
-						<div class="api-response-container">
-							<h4>API Response:</h4>
-							<pre class="exported-json">{apiResponse}</pre>
-						</div>
-					{/if}
-
-					{#if apiError}
-						<div class="api-error">
-							<h4>Error:</h4>
-							<p>{apiError}</p>
-						</div>
-					{/if}
-
-					<h3>Insert Data API Testing</h3>
-					<div class="api-test-form"></div>
-						<div class="form-group">
 							<label for="postUserId">User ID:</label>
 							<input
 								type="text"
@@ -786,11 +856,11 @@
 							/>
 						</div>
 						<div class="form-group">
-							<label for="postScoreId">Score ID (optional):</label>
+							<label for="postScoreId">Question ID (optional):</label>
 							<input
 								type="text"
 								id="postScoreId"
-								placeholder="Enter score ID (optional)"
+								placeholder="Enter question ID (optional)"
 								bind:value={postQuestionId}
 								class="search-input"
 							/>
@@ -821,7 +891,7 @@
 							<p>{postError}</p>
 						</div>
 					{/if}
-
+				</div>
 			</div>
 		{/if}
 	</main>
@@ -1492,5 +1562,67 @@
 	.api-error h4 {
 		margin-top: 0;
 		color: #ff6e67;
+	}
+
+	.loading-message {
+		color: #aaa;
+		font-style: italic;
+		padding: 10px;
+		background-color: rgba(42, 83, 158, 0.1);
+		border-radius: 4px;
+		margin-bottom: 15px;
+		text-align: center;
+	}
+
+	.paper-items {
+		list-style-type: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.paper-item.selected {
+		background-color: rgba(42, 83, 158, 0.3);
+		border-left: 3px solid #3a6fd1;
+	}
+
+	.user-id-info {
+		margin-top: 15px;
+		padding: 10px;
+		background-color: rgba(42, 158, 83, 0.1);
+		border-radius: 4px;
+	}
+
+	a {
+		color: #57c7ff;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+
+	.security-warning {
+		display: flex;
+		background-color: rgba(255, 158, 42, 0.15);
+		border-left: 4px solid #ff9e2a;
+		border-radius: 4px;
+		padding: 12px;
+		margin: 15px 0;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.warning-icon {
+		font-size: 1.4rem;
+		line-height: 1;
+	}
+
+	.warning-text {
+		flex: 1;
+		color: #f0f0f0;
+	}
+
+	.warning-text strong {
+		color: #ff9e64;
 	}
 </style>
