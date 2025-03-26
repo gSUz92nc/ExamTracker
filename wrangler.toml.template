@@ -1,5 +1,4 @@
 name = "{{ project_name }}"
-account_id = "{{ account_id }}"
 compatibility_date = "{{ compatibility_date }}"
 main = "./cloudflare/worker.js"
 

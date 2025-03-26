@@ -2,12 +2,6 @@ name = "exam-tracker"
 compatibility_date = "2025-03-22"
 main = "./cloudflare/worker.js"
 
-
-[[d1_databases]]
-binding = "DATABASE"
-database_name = "ExamTracker"
-database_id = "c2f643b4-0a0d-4b33-a266-428a210b644b"
-
 [site]
 bucket = "./.cloudflare/public"
 
