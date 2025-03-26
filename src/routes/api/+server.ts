@@ -1,4 +1,4 @@
-import { pb } from '$lib/pb';
+import { getPocketBaseClient } from '$lib/pb';
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -11,7 +11,10 @@ export async function GET({ url }: RequestEvent) {
 	}
 
 	try {
-		// Fetch data using Pocketbase
+		// Create a new PocketBase instance for this request
+		const pb = await getPocketBaseClient(true);
+		
+		// Fetch data using the new PocketBase instance
 		const data = await pb.collection('scores').getFullList({
 			filter: `user_id="${userId}" && paper_id="${paperId}"`
 		});
@@ -37,6 +40,9 @@ export async function POST({ request }: RequestEvent) {
 		if (!user_id || !paper_id || !score) {
 			return json({ error: 'Missing required fields: user_id, paper_id, and score are required' }, { status: 400 });
 		}
+		
+		// Create a new PocketBase instance for this request
+		const pb = await getPocketBaseClient();
 		
 		// Create record in PocketBase
 		const data = await pb.collection('scores').create({
