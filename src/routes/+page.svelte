@@ -1085,11 +1085,6 @@
 		background-color: #d13a3a;
 	}
 
-	.action-button.small {
-		font-size: 0.8rem;
-		padding: 4px 8px;
-	}
-
 	.paper-analysis {
 		margin-bottom: 20px;
 	}
@@ -1291,39 +1286,6 @@
 		margin-bottom: 20px;
 	}
 
-	.settings-actions {
-		display: flex;
-		gap: 10px;
-		margin-bottom: 20px;
-	}
-
-	.export-container {
-		margin-top: 20px;
-		background-color: #1e1e1e;
-		border: 1px solid #444;
-		border-radius: 4px;
-		padding: 15px;
-	}
-
-	.exported-json {
-		background-color: #111;
-		border: 1px solid #444;
-		border-radius: 4px;
-		padding: 10px;
-		overflow-x: auto;
-		max-height: 300px;
-		color: #57c7ff;
-		font-family: monospace;
-		white-space: pre-wrap;
-	}
-
-	.export-actions {
-		display: flex;
-		gap: 10px;
-		margin-top: 10px;
-		justify-content: flex-end;
-	}
-
 	.terminal-footer {
 		background-color: #252525;
 		padding: 15px 20px;
@@ -1363,10 +1325,6 @@
 		font-size: 1.1rem;
 	}
 
-	.api-test-form {
-		margin-bottom: 20px;
-	}
-
 	.form-group {
 		margin-bottom: 10px;
 	}
@@ -1375,10 +1333,6 @@
 		display: block;
 		margin-bottom: 5px;
 		color: #57c7ff;
-	}
-
-	.api-response-container {
-		margin-top: 15px;
 	}
 
 	.api-error {
