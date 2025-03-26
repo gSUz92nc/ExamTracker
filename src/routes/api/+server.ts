@@ -16,6 +16,8 @@ export async function GET({ url }: RequestEvent) {
 			filter: `user_id="${userId}" && paper_id="${paperId}"`
 		});
 
+		console.log('Fetched data:', data); // Debugging line
+
 		return json(data);
 	} catch (error) {
 		if (error instanceof Error) {
