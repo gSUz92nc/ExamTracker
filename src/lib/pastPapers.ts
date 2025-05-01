@@ -2557,5 +2557,106 @@ export const pastPapers: Paper[] = [
 			{ id: '5d', marks: 1 }
 		],
 		totalMarks: 50
+	},
+	{
+		id: 47,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2023,
+		season: 'Summer',
+		paper: 'Pure Mathematics 2',
+		url: 'https://qualifications.pearson.com/content/dam/pdf/A-Level/Mathematics/2017/Exam-materials/9ma0-02-que-20230614.pdf',
+		markschemeUrl:
+			'https://qualifications.pearson.com/content/dam/pdf/A-Level/Mathematics/2017/Exam-materials/9ma0-02-rms-20230817.pdf',
+		questions: [
+			{ id: '1a', marks: 2 },
+			{ id: '1b', marks: 2 },
+			{ id: '2ai', marks: 3 },
+			{ id: '2aii', marks: 3 },
+			{ id: '3a', marks: 3 },
+			{ id: '3bi', marks: 1 },
+			{ id: '3bii', marks: 1 },
+			{ id: '4a', marks: 1 },
+			{ id: '4b', marks: 3 },
+			{ id: '5a', marks: 2 },
+			{ id: '5b', marks: 3 },
+			{ id: '6a', marks: 2 },
+			{ id: '6b', marks: 4 },
+			{ id: '7a', marks: 4 },
+			{ id: '7b', marks: 3 },
+			{ id: '8a', marks: 3 },
+			{ id: '8bi', marks: 2 },
+			{ id: '8bii', marks: 1 },
+			{ id: '9a', marks: 3 },
+			{ id: '9b', marks: 4 },
+			{ id: '10a', marks: 3 },
+			{ id: '10b', marks: 4 },
+			{ id: '11a', marks: 3 },
+			{ id: '11b', marks: 5 },
+			{ id: '11c', marks: 2 },
+			{ id: '12a', marks: 2 },
+			{ id: '12b', marks: 2 },
+			{ id: '12c', marks: 5 },
+			{ id: '12d', marks: 1 },
+			{ id: '13a', marks: 4 },
+			{ id: '13b', marks: 4 },
+			{ id: '13c', marks: 5 },
+			{ id: '14a', marks: 3 },
+			{ id: '14b', marks: 4 },
+			{ id: '15', marks: 3 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 48,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2023,
+		season: 'Summer',
+		paper: 'Statistics',
+		url: 'https://qualifications.pearson.com/content/dam/pdf/A-Level/Mathematics/2017/Exam-materials/9ma0-31-que-20230621.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p2-ms.pdf',
+		questions: [
+			{ id: '1a', marks: 1 },
+			{ id: '1b', marks: 3 },
+			{ id: '1c', marks: 2 },
+			{ id: '2a', marks: 1 },
+			{ id: '2bi', marks: 1 },
+			{ id: '2bii', marks: 1 },
+			{ id: '2c', marks: 2 },
+			{ id: '2d', marks: 4 },
+			{ id: '3a', marks: 2 },
+			{ id: '3bi', marks: 1 },
+			{ id: '3bii', marks: 2 },
+			{ id: '3ci', marks: 1 },
+			{ id: '3cii', marks: 1 },
+			{ id: '4a', marks: 1 },
+			{ id: '4b', marks: 4 },
+			{ id: '4c', marks: 1 },
+			{ id: '5a', marks: 2 },
+			{ id: '5b', marks: 5 },
+			{ id: '5c', marks: 1 },
+			{ id: '6a', marks: 2 },
+			{ id: '6b', marks: 1 },
+			{ id: '6c', marks: 4 },
+			{ id: '6d', marks: 3 },
+			{ id: '6ei', marks: 1 },
+			{ id: '6eii', marks: 2 },
+			{ id: '6f', marks: 1 }
+		],
+		totalMarks: 50
 	}
 ];
