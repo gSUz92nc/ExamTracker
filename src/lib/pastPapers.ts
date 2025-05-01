@@ -81,7 +81,7 @@ export const pastPapers: Paper[] = [
 			{ id: '6b', marks: 4 },
 			{ id: '7', marks: 12 }
 		],
-totalMarks: 140
+		totalMarks: 140
 	},
 	{
 		id: 2,
@@ -133,7 +133,7 @@ totalMarks: 140
 			{ id: '9e', marks: 4 },
 			{ id: '9f', marks: 9 }
 		],
-totalMarks: 140
+		totalMarks: 140
 	},
 	{
 		id: 3,
@@ -252,7 +252,7 @@ totalMarks: 140
 			{ id: '9e', marks: 4 },
 			{ id: '9f', marks: 9 }
 		],
-totalMarks: 140
+		totalMarks: 140
 	},
 	{
 		id: 5,
@@ -1359,7 +1359,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/1 Physics Paper 1',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74081-QP-NOV21.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74081-MS-NOV21.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74081-MS-NOV21.PDF',
 		questions: [
 			{ id: '1.1', marks: 3 },
 			{ id: '1.2', marks: 3 },
@@ -1426,7 +1427,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/2 Physics Paper 2',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74082-QP-NOV21.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74082-MS-NOV21.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74082-MS-NOV21.PDF',
 		questions: [
 			{ id: '1.1', marks: 1 },
 			{ id: '1.2', marks: 3 },
@@ -1497,7 +1499,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/3A Physics Paper 3 Section A',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74083A-QP-NOV21.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74083A-MS-NOV21.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2021/november/AQA-74083A-MS-NOV21.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 2 },
@@ -1537,7 +1540,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/1 Physics Paper 1',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74081-QP-NOV20.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74081-W-MS-NOV20.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74081-W-MS-NOV20.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 1 },
@@ -1605,7 +1609,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/2 Physics Paper 2',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74082-QP-NOV20.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74082-W-MS-NOV20.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74082-W-MS-NOV20.PDF',
 		questions: [
 			{ id: '1.1', marks: 1 },
 			{ id: '1.2', marks: 1 },
@@ -1681,7 +1686,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/3A Physics Paper 3 Section A',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74083A-QP-NOV20.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74083A-W-MS-NOV20.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2020/november/AQA-74083A-W-MS-NOV20.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 2 },
@@ -1721,7 +1727,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/1 Physics Paper 1',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74081-QP-JUN19.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74081-W-MS-JUN19.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74081-W-MS-JUN19.PDF',
 		questions: [
 			{ id: '1.1', marks: 1 },
 			{ id: '1.2', marks: 1 },
@@ -1793,7 +1800,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/2 Physics Paper 2',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74082-QP-JUN19.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74082-QP-JUN19.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74082-QP-JUN19.PDF',
 		questions: [
 			{ id: '1.1', marks: 5 },
 			{ id: '1.2', marks: 4 },
@@ -1863,7 +1871,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/3A Physics Paper 3 Section A',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74083A-QP-JUN19.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74083A-QP-JUN19.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74083A-QP-JUN19.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 1 },
@@ -1903,7 +1912,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/1 Physics Paper 1',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74081-QP-JUN18.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74081-W-MS-JUN18.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74081-W-MS-JUN18.PDF',
 		questions: [
 			{ id: '1.1', marks: 3 },
 			{ id: '1.2', marks: 3 },
@@ -1971,7 +1981,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/2 Physics Paper 2',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74082-QP-JUN18.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74083A-W-MS-JUN19.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2019/june/AQA-74083A-W-MS-JUN19.PDF',
 		questions: [
 			{ id: '1.1', marks: 2 },
 			{ id: '1.2', marks: 3 },
@@ -2047,7 +2058,8 @@ totalMarks: 140
 		season: 'Summer',
 		paper: '7408/3A Physics Paper 3 Section A',
 		url: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74083A-QP-JUN18.PDF',
-		markschemeUrl: 'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74083A-W-MS-JUN18.PDF',
+		markschemeUrl:
+			'https://filestore.aqa.org.uk/sample-papers-and-mark-schemes/2018/june/AQA-74083A-W-MS-JUN18.PDF',
 		questions: [
 			{ id: '1.1', marks: 3 },
 			{ id: '1.2', marks: 3 },
@@ -2068,5 +2080,482 @@ totalMarks: 140
 			{ id: '3.6', marks: 3 }
 		],
 		totalMarks: 45
+	},
+	{
+		id: 38,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2017,
+		season: 'Sample',
+		paper: 'Pure Mathematics 1',
+		url: 'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p1-qp.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p1-ms.pdf',
+		questions: [
+			{ id: '1a', marks: 3 },
+			{ id: '1b', marks: 2 },
+			{ id: '1c', marks: 2 },
+			{ id: '2a', marks: 2 },
+			{ id: '2b', marks: 3 },
+			{ id: '3a', marks: 2 },
+			{ id: '3b', marks: 2 },
+			{ id: '4', marks: 4 },
+			{ id: '5', marks: 3 },
+			{ id: '6ai', marks: 2 },
+			{ id: '6aii', marks: 0 },
+			{ id: '6bi', marks: 5 },
+			{ id: '6bii', marks: 0 },
+			{ id: '7', marks: 5 },
+			{ id: '8a', marks: 2 },
+			{ id: '8b', marks: 2 },
+			{ id: '8c', marks: 2 },
+			{ id: '9a', marks: 4 },
+			{ id: '9b', marks: 1 },
+			{ id: '10', marks: 5 },
+			{ id: '11a', marks: 3 },
+			{ id: '11b', marks: 1 },
+			{ id: '11c', marks: 3 },
+			{ id: '11di', marks: 1 },
+			{ id: '11dii', marks: 1 },
+			{ id: '12a', marks: 2 },
+			{ id: '12b', marks: 4 },
+			{ id: '12c', marks: 2 },
+			{ id: '12d', marks: 1 },
+			{ id: '13a', marks: 2 },
+			{ id: '13b', marks: 5 },
+			{ id: '13c', marks: 6 },
+			{ id: '14a', marks: 3 },
+			{ id: '14b', marks: 1 },
+			{ id: '14c', marks: 6 },
+			{ id: '15a', marks: 4 },
+			{ id: '15bi', marks: 2 },
+			{ id: '15bii', marks: 2 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 39,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2017,
+		season: 'Sample',
+		paper: 'Pure Mathematics 2',
+		url: 'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p2-qp.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p2-ms.pdf',
+		questions: [
+			{ id: '1', marks: 3 },
+			{ id: '2a', marks: 1 },
+			{ id: '2bi', marks: 1 },
+			{ id: '2bii', marks: 1 },
+			{ id: '3', marks: 4 },
+			{ id: '4a', marks: 2 },
+			{ id: '4b', marks: 3 },
+			{ id: '5a', marks: 2 },
+			{ id: '5b', marks: 2 },
+			{ id: '6i', marks: 2 },
+			{ id: '6ii', marks: 2 },
+			{ id: '6iii', marks: 2 },
+			{ id: '7a', marks: 4 },
+			{ id: '7b', marks: 1 },
+			{ id: '8a', marks: 4 },
+			{ id: '8b', marks: 3 },
+			{ id: '9', marks: 5 },
+			{ id: '10', marks: 4 },
+			{ id: '11a', marks: 1 },
+			{ id: '11b', marks: 3 },
+			{ id: '11c', marks: 2 },
+			{ id: '12a', marks: 6 },
+			{ id: '12b', marks: 2 },
+			{ id: '13a', marks: 3 },
+			{ id: '13bi', marks: 1 },
+			{ id: '13bii', marks: 1 },
+			{ id: '13c', marks: 3 },
+			{ id: '13d', marks: 1 },
+			{ id: '14a', marks: 3 },
+			{ id: '14b', marks: 5 },
+			{ id: '14c', marks: 1 },
+			{ id: '15', marks: 10 },
+			{ id: '16a', marks: 3 },
+			{ id: '16b', marks: 6 },
+			{ id: '16c', marks: 3 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 40,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2017,
+		season: 'Sample',
+		paper: 'Statistics and Mechanics',
+		url: 'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p3-qp.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p3-ms.pdf',
+		questions: [
+			{ id: '1a', marks: 3 },
+			{ id: '1b', marks: 3 },
+			{ id: '1c', marks: 2 },
+			{ id: '1d', marks: 2 },
+			{ id: '1e', marks: 2 },
+			{ id: '1f', marks: 1 },
+			{ id: '2a', marks: 1 },
+			{ id: '2b', marks: 1 },
+			{ id: '2c', marks: 3 },
+			{ id: '2d', marks: 1 },
+			{ id: '3a', marks: 5 },
+			{ id: '3b', marks: 2 },
+			{ id: '3c', marks: 5 },
+			{ id: '4a', marks: 2 },
+			{ id: '4b', marks: 1 },
+			{ id: '4c', marks: 5 },
+			{ id: '4d', marks: 2 },
+			{ id: '5a', marks: 1 },
+			{ id: '5b', marks: 3 },
+			{ id: '5c', marks: 1 },
+			{ id: '5d', marks: 3 },
+			{ id: '5e', marks: 1 },
+			{ id: '6', marks: 6 },
+			{ id: '7a', marks: 6 },
+			{ id: '7b', marks: 2 },
+			{ id: '8a', marks: 2 },
+			{ id: '8b', marks: 2 },
+			{ id: '8c', marks: 3 },
+			{ id: '8d', marks: 3 },
+			{ id: '9a', marks: 5 },
+			{ id: '9b', marks: 5 },
+			{ id: '9c', marks: 3 },
+			{ id: '10a', marks: 6 },
+			{ id: '10b', marks: 5 },
+			{ id: '10c', marks: 2 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 41,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2023,
+		season: 'Summer',
+		paper: 'Pure Mathematics 1',
+		url: 'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p1-qp.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p2-ms.pdf',
+		questions: [
+			{ id: '1', marks: 4 },
+			{ id: '2a', marks: 2 },
+			{ id: '2bi', marks: 1 },
+			{ id: '2bii', marks: 3 },
+			{ id: '3a', marks: 1 },
+			{ id: '3b', marks: 2 },
+			{ id: '4a', marks: 3 },
+			{ id: '4b', marks: 2 },
+			{ id: '5a', marks: 3 },
+			{ id: '5b', marks: 3 },
+			{ id: '6a', marks: 1 },
+			{ id: '6b', marks: 2 },
+			{ id: '6c', marks: 3 },
+			{ id: '7a', marks: 1 },
+			{ id: '7b', marks: 3 },
+			{ id: '7c', marks: 2 },
+			{ id: '7d', marks: 2 },
+			{ id: '8a', marks: 2 },
+			{ id: '8b', marks: 2 },
+			{ id: '8c', marks: 6 },
+			{ id: '9a', marks: 2 },
+			{ id: '9bi', marks: 3 },
+			{ id: '9bii', marks: 2 },
+			{ id: '10ai', marks: 2 },
+			{ id: '10aii', marks: 1 },
+			{ id: '10b', marks: 6 },
+			{ id: '11a', marks: 2 },
+			{ id: '11b', marks: 3 },
+			{ id: '11c', marks: 2 },
+			{ id: '12', marks: 5 },
+			{ id: '13a', marks: 3 },
+			{ id: '13b', marks: 1 },
+			{ id: '13c', marks: 2 },
+			{ id: '13d', marks: 1 },
+			{ id: '14', marks: 4 },
+			{ id: '15a', marks: 5 },
+			{ id: '15b', marks: 2 },
+			{ id: '15c', marks: 1 },
+			{ id: '15di', marks: 1 },
+			{ id: '15dii', marks: 2 },
+			{ id: '15e', marks: 2 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 42,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2017,
+		season: 'Sample',
+		paper: 'Statistics and Mechanics',
+		url: 'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p3-qp.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2022/12/edexcel-al-maths-specimen-p3-ms.pdf',
+		questions: [
+			{ id: '1a', marks: 3 },
+			{ id: '1b', marks: 3 },
+			{ id: '1c', marks: 2 },
+			{ id: '1d', marks: 2 },
+			{ id: '1e', marks: 2 },
+			{ id: '1f', marks: 1 },
+			{ id: '2a', marks: 1 },
+			{ id: '2b', marks: 1 },
+			{ id: '2c', marks: 3 },
+			{ id: '2d', marks: 1 },
+			{ id: '3a', marks: 5 },
+			{ id: '3b', marks: 2 },
+			{ id: '3c', marks: 5 },
+			{ id: '4a', marks: 2 },
+			{ id: '4b', marks: 1 },
+			{ id: '4c', marks: 5 },
+			{ id: '4d', marks: 2 },
+			{ id: '5a', marks: 1 },
+			{ id: '5b', marks: 3 },
+			{ id: '5c', marks: 1 },
+			{ id: '5d', marks: 3 },
+			{ id: '5e', marks: 1 },
+			{ id: '6', marks: 6 },
+			{ id: '7a', marks: 6 },
+			{ id: '7b', marks: 2 },
+			{ id: '8a', marks: 2 },
+			{ id: '8b', marks: 2 },
+			{ id: '8c', marks: 3 },
+			{ id: '8d', marks: 3 },
+			{ id: '9a', marks: 5 },
+			{ id: '9b', marks: 5 },
+			{ id: '9c', marks: 3 },
+			{ id: '10a', marks: 6 },
+			{ id: '10b', marks: 5 },
+			{ id: '10c', marks: 2 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 43,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2022,
+		season: 'Summer',
+		paper: 'Pure Mathematics 1',
+		url: 'https://cdn.savemyexams.com/uploads/2023/08/9ma0-01--qp--a-level-pure-mathematics-1---may-2022-pdf.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2023/08/9ma0-01--ms--a-level-pure-mathematics-1---may-2022-pdf.pdf',
+		questions: [
+			{ id: '1a', marks: 1 },
+			{ id: '1b', marks: 1 },
+			{ id: '1c', marks: 2 },
+			{ id: '2', marks: 3 },
+			{ id: '3a', marks: 3 },
+			{ id: '3b', marks: 2 },
+			{ id: '4a', marks: 1 },
+			{ id: '4b', marks: 2 },
+			{ id: '5a', marks: 4 },
+			{ id: '5b', marks: 2 },
+			{ id: '6a', marks: 1 },
+			{ id: '6b', marks: 2 },
+			{ id: '6c', marks: 3 },
+			{ id: '7i', marks: 3 },
+			{ id: '7ii', marks: 2 },
+			{ id: '8a', marks: 1 },
+			{ id: '8b', marks: 4 },
+			{ id: '8ci', marks: 3 },
+			{ id: '8cii', marks: 0 },
+			{ id: '9a', marks: 2 },
+			{ id: '9b', marks: 4 },
+			{ id: '10a', marks: 1 },
+			{ id: '10b', marks: 3 },
+			{ id: '10c', marks: 4 },
+			{ id: '11a', marks: 2 },
+			{ id: '11b', marks: 5 },
+			{ id: '12', marks: 5 },
+			{ id: '13i', marks: 3 },
+			{ id: '13iia', marks: 2 },
+			{ id: '13iib', marks: 1 },
+			{ id: '13iic', marks: 1 },
+			{ id: '14a', marks: 4 },
+			{ id: '14b', marks: 4 },
+			{ id: '15a', marks: 4 },
+			{ id: '15b', marks: 4 },
+			{ id: '15c', marks: 2 },
+			{ id: '16a', marks: 5 },
+			{ id: '16b', marks: 4 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 44,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2022,
+		season: 'Summer',
+		paper: 'Pure Mathematics 2',
+		url: 'https://cdn.savemyexams.com/uploads/2023/08/9ma0-02---qp---a-level-pure-mathematics-2---june-2022-pdf.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2023/08/9ma0-02---ms---a-level-pure-mathematics-2---june-2022-pdf.pdf',
+		questions: [
+			{ id: '1', marks: 4 },
+			{ id: '2a', marks: 2 },
+			{ id: '2b', marks: 2 },
+			{ id: '3ai', marks: 2 },
+			{ id: '3aii', marks: 0 },
+			{ id: '3b', marks: 2 },
+			{ id: '4', marks: 3 },
+			{ id: '5a', marks: 3 },
+			{ id: '5bi', marks: 1.5 },
+			{ id: '5bii', marks: 1.5 },
+			{ id: '6a', marks: 4 },
+			{ id: '6b', marks: 1 },
+			{ id: '6c', marks: 2 },
+			{ id: '7a', marks: 4 },
+			{ id: '7b', marks: 1 },
+			{ id: '8', marks: 6 },
+			{ id: '9a', marks: 4 },
+			{ id: '9b', marks: 1 },
+			{ id: '10a', marks: 2 },
+			{ id: '10b', marks: 2 },
+			{ id: '10c', marks: 1 },
+			{ id: '10d', marks: 3 },
+			{ id: '11', marks: 4 },
+			{ id: '12a', marks: 3 },
+			{ id: '12b', marks: 3 },
+			{ id: '13a', marks: 3 },
+			{ id: '13b', marks: 3 },
+			{ id: '14a', marks: 3 },
+			{ id: '14b', marks: 5 },
+			{ id: '14ci', marks: 1 },
+			{ id: '14cii', marks: 1 },
+			{ id: '15a', marks: 3 },
+			{ id: '15b', marks: 2 },
+			{ id: '15c', marks: 5 },
+			{ id: '16a', marks: 5 },
+			{ id: '16b', marks: 2 },
+			{ id: '16c', marks: 5 }
+		],
+		totalMarks: 100
+	},
+	{
+		id: 45,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2022,
+		season: 'Summer',
+		paper: 'Statistics',
+		url: 'https://cdn.savemyexams.com/uploads/2023/08/9ma0-31-a-level-statistics---june-2022-pdf.pdf',
+		markschemeUrl:
+			'https://cdn.savemyexams.com/uploads/2023/08/9ma0-31---ms---a-level-statistics---june-2022-pdf.pdf',
+		questions: [
+			{ id: '1a', marks: 3 },
+			{ id: '1b', marks: 3 },
+			{ id: '2a', marks: 2 },
+			{ id: '2b', marks: 1 },
+			{ id: '2c', marks: 5 },
+			{ id: '2d', marks: 4 },
+			{ id: '3a', marks: 1 },
+			{ id: '3b', marks: 3 },
+			{ id: '3c', marks: 2 },
+			{ id: '3d', marks: 1 },
+			{ id: '4a', marks: 1 },
+			{ id: '4b', marks: 3 },
+			{ id: '4c', marks: 1 },
+			{ id: '4d', marks: 1 },
+			{ id: '5a', marks: 1 },
+			{ id: '5b', marks: 1 },
+			{ id: '5c', marks: 4 },
+			{ id: '5d', marks: 1 },
+			{ id: '5e', marks: 1 },
+			{ id: '5f', marks: 2 },
+			{ id: '6a', marks: 1 },
+			{ id: '6b', marks: 3 },
+			{ id: '6c', marks: 5 }
+		],
+		totalMarks: 50
+	},
+	{
+		id: 46,
+		subject: 'maths',
+		board: 'edexcel',
+		extraResources: [
+			{
+				type: 'Formula Sheet',
+				url: 'https://qualifications.pearson.com/content/dam/pdf/A%20Level/Mathematics/2017/specification-and-sample-assesment/pearson-edexcel-a-level-gce-in-mathematics-formulae-book.pdf'
+			}
+		],
+		year: 2022,
+		season: 'Summer',
+		paper: 'Mechanics',
+		url: 'https://cdn.savemyexams.com/uploads/2023/08/2206-9ma0-32-a-level-mechanics---june-2022-pdf.pdf',
+		markschemeUrl: 'https://cdn.savemyexams.com/uploads/2023/08/9ma0-32-rms-20220818.pdf',
+		questions: [
+			{ id: '1a', marks: 2 },
+			{ id: '1b', marks: 2 },
+			{ id: '1c', marks: 4 },
+			{ id: '2ai', marks: 3 },
+			{ id: '2aii', marks: 1 },
+			{ id: '2b', marks: 6 },
+			{ id: '3a', marks: 4 },
+			{ id: '3b', marks: 5 },
+			{ id: '4a', marks: 1 },
+			{ id: '4b', marks: 3 },
+			{ id: '4c', marks: 3 },
+			{ id: '4d', marks: 4 },
+			{ id: '5a', marks: 6 },
+			{ id: '5b', marks: 4 },
+			{ id: '5c', marks: 1 },
+			{ id: '5d', marks: 1 }
+		],
+		totalMarks: 50
 	}
 ];
