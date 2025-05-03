@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { pastPapers } from '$lib/pastPapers';
 
 	import type { Paper, Question } from '$lib/pastPapers';
@@ -76,7 +77,6 @@
 				const storedUserId = localStorage.getItem(USER_ID_KEY);
 				if (storedUserId) {
 					userId = storedUserId;
-					console.log('User ID loaded from localStorage');
 				}
 			} catch (error) {
 				console.error('Failed to load user ID from localStorage:', error);
@@ -89,15 +89,32 @@
 		if (typeof window !== 'undefined') {
 			try {
 				localStorage.setItem(USER_ID_KEY, userId);
-				console.log('User ID saved to localStorage');
 			} catch (error) {
 				console.error('Failed to save user ID to localStorage:', error);
 			}
 		}
 	};
 
+	async function loadAllPaperScores() {
+		if (!userId) {
+			return;
+		}
+
+		try {
+			const response: Response = await fetch(`/api/userScores?user_id=${userId}`);
+
+			const data = await response.json();
+
+			for (const item of data.scores) {
+				userMarks[item.paper_id + '-' + item.question_id] = parseInt(item.score);
+			}
+		} catch (error) {
+			apiError = error instanceof Error ? error.message : 'An unknown error occured';
+		}
+	}
+
 	// Load scores for a specific paper from API
-	async function loadPaperScores(paperId: number) {
+	async function loadPaperScores(paperId: number): Promise<void> {
 		if (!userId) {
 			apiError = 'Please set your User ID in the Settings tab';
 			return;
@@ -191,7 +208,7 @@
 	);
 
 	// Calculate total score for selected paper - with null safety
-	let totalScore = $derived<number>(
+	let totalScore: number = $derived<number>(
 		selectedPaper
 			? questions.reduce((sum, q) => {
 					const key = `${selectedPaper?.id}-${q.id}`;
@@ -201,7 +218,7 @@
 	);
 
 	// Calculate percentage score
-	let percentageScore = $derived<number>(
+	let percentageScore: number = $derived<number>(
 		selectedPaper
 			? (function () {
 					// Calculate total marks available for the paper based on its questions
@@ -309,8 +326,12 @@
 
 	// Get paper score data
 	function getPaperScoreData(paperId: number): PaperScoreData {
+
 		const paper = pastPapers.find((p) => p.id === paperId);
-		if (!paper) return { score: 0, percentage: 0 };
+		if (!paper) {
+			console.warn(`Paper with ID ${paperId} not found`);
+			return { score: 0, percentage: 0 };
+		}
 
 		// Calculate total score for this paper
 		let score = 0;
@@ -319,7 +340,8 @@
 		// Sum up the user's marks for each question in this paper
 		paper.questions.forEach((q) => {
 			const key = `${paperId}-${q.id}`;
-			score += userMarks[key] || 0;
+			const questionScore = userMarks[key] || 0;
+			score += questionScore;
 		});
 
 		// Calculate percentage
@@ -353,6 +375,10 @@
 	function calculateTotalMarks(paper: Paper): number {
 		return paper.questions.reduce((sum, q) => sum + q.marks, 0);
 	}
+
+	onMount(() => {
+		loadAllPaperScores();
+	});
 </script>
 
 <svelte:head>
