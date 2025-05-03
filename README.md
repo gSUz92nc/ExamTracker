@@ -60,7 +60,7 @@ ExamTracker is a modern web application designed to help students track their pe
 
 ## Environment Variables
 
-The following environment variables need to be configured in your `.env` file:
+The following environment variables need to be configured in your `.env` file (I have my backend behind Clouflare Zero Trust which is why I have the CF_* variables. You probably wouldn't need it depending on your setup):
 
 - `CF_ACCESS_CLIENT_ID`: Your Cloudflare Access Client ID
 - `CF_ACCESS_CLIENT_SECRET`: Your Cloudflare Access Client Secret
@@ -78,7 +78,7 @@ The following environment variables need to be configured in your `.env` file:
 ## Project Structure
 
 ```
-revision-tool/
+ExamTracker/
 ├── src/                     # Source code
 │   ├── lib/                 # Library files and utilities
 │   │   ├── pb.ts           # PocketBase client configuration
@@ -92,7 +92,6 @@ revision-tool/
 │   ├── app.css              # Global CSS
 │   └── app.html             # HTML template
 ├── static/                  # Static assets
-├── migrations/              # Database migration scripts
 ├── wrangler.toml            # Cloudflare Workers configuration
 └── .env.template            # Template for environment variables
 ```
