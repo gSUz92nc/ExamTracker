@@ -5,17 +5,8 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script>
-			// Immediately set the theme before any content loads
-			try {
-				const savedTheme = localStorage.getItem('theme');
-				const theme =
-					savedTheme ||
-					(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-				document.documentElement.setAttribute('data-theme', theme);
-			} catch (e) {
-				// Fallback to light theme
-				document.documentElement.setAttribute('data-theme', 'light');
-			}
+			// Force dark theme always
+			document.documentElement.setAttribute('data-theme', 'dark');
 		</script>
 		%sveltekit.head%
 	</head>

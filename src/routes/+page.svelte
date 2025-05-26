@@ -350,12 +350,18 @@
 		return { score, percentage };
 	}
 
-	// Get weak papers (papers with score < 60%)
+	// Get all papers with progress > 0%, sorted by progress percentage
 	let weakPapers = $derived<Paper[]>(
-		pastPapers.filter((paper) => {
-			const { percentage } = getPaperScoreData(paper.id);
-			return percentage > 0 && percentage < 60;
-		})
+		pastPapers
+			.filter((paper) => {
+				const { percentage } = getPaperScoreData(paper.id);
+				return percentage > 0;
+			})
+			.sort((a, b) => {
+				const aPercentage = getPaperScoreData(a.id).percentage;
+				const bPercentage = getPaperScoreData(b.id).percentage;
+				return aPercentage - bPercentage;
+			})
 	);
 
 	// Helper function to safely find subject/board name
@@ -677,10 +683,10 @@
 				</div>
 
 				<div class="weak-papers-section">
-					<h3>Papers That Need Improvement</h3>
+					<h3>All Papers by Progress</h3>
 
 					{#if weakPapers.length === 0}
-						<p class="no-weak-papers">No weak papers found. Great job!</p>
+						<p class="no-weak-papers">No completed papers found. Start practicing!</p>
 					{:else}
 						<ul class="weak-papers-list">
 							{#each weakPapers as paper (paper.id)}
@@ -699,12 +705,12 @@
 											></div>
 										</div>
 										<button
-											class="review-paper-button"
+											class="open-paper-button"
 											onclick={() => {
 												setActiveTab('papers', paper);
 											}}
 										>
-											Review Paper
+											Open Paper
 										</button>
 									</div>
 								</li>
@@ -903,17 +909,21 @@
 		background-color: transparent;
 		border: 1px solid #444;
 		color: #57c7ff;
-		padding: 8px 12px;
-		border-radius: 4px;
+		padding: 12px 16px;
+		border-radius: 5px;
 		font-family: 'Courier New', monospace;
 		cursor: pointer;
 		margin-bottom: 15px;
 		width: 100%;
 		text-align: left;
+		transition: all 0.2s ease;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	}
 
 	.back-button:hover {
 		background-color: #252525;
+		transform: translateY(-1px);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
 
 	.section {
@@ -937,41 +947,54 @@
 		background-color: transparent;
 		border: 1px solid #444;
 		color: #ddd;
-		padding: 6px 12px;
-		border-radius: 4px;
+		padding: 8px 16px;
+		border-radius: 5px;
 		font-family: 'Courier New', monospace;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: all 0.2s ease;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	}
 
 	.option:hover {
 		background-color: #333;
+		transform: translateY(-1px);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
 
 	.option.selected {
 		background-color: #2a539e;
 		border-color: #3a6fd1;
 		color: white;
+		box-shadow: 0 2px 4px rgba(42, 83, 158, 0.3);
 	}
 
 	.search-input {
 		background-color: #252525;
 		border: 1px solid #444;
 		color: #f0f0f0;
-		padding: 8px 12px;
+		padding: 12px 16px;
 		width: 100%;
 		font-family: 'Courier New', monospace;
-		border-radius: 4px;
+		border-radius: 5px;
+		transition: all 0.2s ease;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	}
+
+	.search-input:focus {
+		border-color: #57c7ff;
+		box-shadow: 0 2px 4px rgba(87, 199, 255, 0.2);
+		outline: none;
 	}
 
 	.papers-list {
 		background-color: #252525;
 		border: 1px solid #444;
-		border-radius: 4px;
-		padding: 16px;
+		border-radius: 6px;
+		padding: 20px;
 		margin-top: 20px;
 		max-height: 600px;
 		overflow-y: auto;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
 	.papers-list.compact {
@@ -1011,10 +1034,10 @@
 	.paper-item {
 		display: flex;
 		align-items: center;
-		padding: 8px 10px;
+		padding: 12px 16px;
 		border-bottom: 1px dashed #333;
 		cursor: pointer;
-		transition: background-color 0.2s;
+		transition: all 0.2s ease;
 		width: 100%;
 		text-align: left;
 		background: transparent;
@@ -1023,6 +1046,13 @@
 		font-family: inherit;
 		font-size: inherit;
 		justify-content: space-between;
+		border-radius: 4px;
+		margin-bottom: 2px;
+	}
+
+	.paper-item:hover {
+		background-color: #2a2a2a;
+		transform: translateX(4px);
 	}
 
 	.paper-icon {
@@ -1042,9 +1072,11 @@
 
 	.paper-detail {
 		background-color: #252525;
-		padding: 20px;
+		padding: 24px;
 		border: 1px solid #444;
+		border-radius: 6px;
 		overflow-y: auto;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
 	.paper-header {
@@ -1092,15 +1124,19 @@
 		background-color: #2a539e;
 		border: none;
 		color: white;
-		padding: 6px 12px;
-		border-radius: 4px;
+		padding: 8px 16px;
+		border-radius: 5px;
 		font-family: 'Courier New', monospace;
 		cursor: pointer;
-		transition: background-color 0.2s;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		font-weight: bold;
 	}
 
 	.action-button:hover {
 		background-color: #3a6fd1;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 	}
 
 	.action-button.reset {
@@ -1109,6 +1145,8 @@
 
 	.action-button.reset:hover {
 		background-color: #d13a3a;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 	}
 
 	.paper-analysis {
@@ -1149,9 +1187,15 @@
 		display: grid;
 		grid-template-columns: 50px 50px 1fr;
 		gap: 10px;
-		padding: 10px 0;
+		padding: 16px 12px;
 		border-bottom: 1px dashed #333;
 		align-items: center;
+		border-radius: 4px;
+		transition: background-color 0.2s ease;
+	}
+
+	.question-row:hover {
+		background-color: #2a2a2a;
 	}
 
 	.mark-buttons {
@@ -1161,8 +1205,8 @@
 	}
 
 	.mark-button {
-		width: 30px;
-		height: 30px;
+		width: 32px;
+		height: 32px;
 		background-color: #1e1e1e;
 		border: 1px solid #444;
 		color: #f0f0f0;
@@ -1173,15 +1217,20 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		transition: all 0.2s ease;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	}
 
 	.mark-button:hover {
 		background-color: #333;
+		transform: translateY(-1px);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 	}
 
 	.mark-button.selected {
 		background-color: #2a539e;
 		border-color: #3a6fd1;
+		box-shadow: 0 2px 4px rgba(42, 83, 158, 0.3);
 	}
 
 	/* Performance tab styles */
@@ -1209,10 +1258,18 @@
 	.stat-card {
 		background-color: #252525;
 		border: 1px solid #444;
-		border-radius: 4px;
-		padding: 20px;
+		border-radius: 6px;
+		padding: 24px;
 		flex: 1;
 		text-align: center;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		transition: all 0.2s ease;
+	}
+
+	.stat-card:hover {
+		border-color: #555;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.stat-value {
@@ -1229,73 +1286,122 @@
 	.weak-papers-section {
 		background-color: #252525;
 		border: 1px solid #444;
-		border-radius: 4px;
-		padding: 20px;
+		border-radius: 6px;
+		padding: 24px;
 		margin-top: 30px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.weak-papers-section h3 {
+		color: #57c7ff;
+		margin-bottom: 20px;
+		font-size: 1.3rem;
+		border-bottom: 1px solid #444;
+		padding-bottom: 10px;
 	}
 
 	.no-weak-papers {
 		color: #5af78e;
 		font-style: italic;
+		text-align: center;
+		padding: 20px;
+		background-color: rgba(90, 247, 142, 0.05);
+		border-radius: 4px;
+		border: 1px dashed #444;
 	}
 
 	.weak-papers-list {
 		list-style-type: none;
 		padding: 0;
+		margin: 0;
 	}
 
 	.weak-paper-item {
-		margin-bottom: 15px;
+		background-color: #1e1e1e;
+		border: 1px solid #333;
+		border-radius: 6px;
+		padding: 16px;
+		margin-bottom: 12px;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+
+	.weak-paper-item:hover {
+		border-color: #444;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.weak-paper-info {
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 5px;
+		align-items: center;
+		margin-bottom: 12px;
 	}
 
 	.weak-paper-name {
 		font-weight: bold;
+		color: #f0f0f0;
+		font-size: 0.95rem;
 	}
 
 	.weak-paper-score {
-		color: #ff6e67;
+		color: #ff9e64;
+		font-weight: bold;
+		font-size: 1rem;
+		background-color: rgba(255, 158, 100, 0.1);
+		padding: 4px 8px;
+		border-radius: 4px;
+		border: 1px solid rgba(255, 158, 100, 0.2);
 	}
 
 	.weak-paper-actions {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-top: 10px;
+		gap: 12px;
 	}
 
 	.weak-paper-bar {
-		height: 8px;
-		background-color: #1e1e1e;
-		border-radius: 4px;
+		height: 10px;
+		background-color: #0f0f0f;
+		border-radius: 5px;
 		overflow: hidden;
 		flex-grow: 1;
-		margin-right: 10px;
+		border: 1px solid #333;
+		position: relative;
 	}
 
 	.weak-paper-progress {
 		height: 100%;
-		background-color: #9e2a2a;
+		background-color: #2a539e;
+		transition: width 0.3s ease;
 	}
 
-	.review-paper-button {
+	.open-paper-button {
 		background-color: #2a539e;
 		border: none;
 		color: white;
-		padding: 6px 12px;
-		border-radius: 4px;
+		padding: 8px 16px;
+		border-radius: 5px;
 		font-family: 'Courier New', monospace;
 		cursor: pointer;
-		transition: background-color 0.2s;
+		transition: all 0.2s ease;
+		font-size: 0.9rem;
+		font-weight: bold;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		flex-shrink: 0;
 	}
 
-	.review-paper-button:hover {
+	.open-paper-button:hover {
 		background-color: #3a6fd1;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	.open-paper-button:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
 
 	/* Settings tab styles */
@@ -1307,9 +1413,10 @@
 	.settings-section {
 		background-color: #252525;
 		border: 1px solid #444;
-		border-radius: 4px;
-		padding: 20px;
+		border-radius: 6px;
+		padding: 24px;
 		margin-bottom: 20px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
 	.terminal-footer {
