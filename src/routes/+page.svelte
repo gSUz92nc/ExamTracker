@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { pastPapers } from '$lib/pastPapers';
 
 	import type { Paper, Question } from '$lib/pastPapers';
@@ -70,6 +72,27 @@
 		{ id: 'cambridge', name: 'Cambridge' }
 	];
 
+	// Function to update URL query parameters
+	const updateUrl = () => {
+		if (typeof window === 'undefined') return;
+		const params = new URLSearchParams(window.location.search);
+		if (selectedSubject) params.set('subject', selectedSubject);
+		else params.delete('subject');
+		if (selectedBoard) params.set('board', selectedBoard);
+		else params.delete('board');
+		if (selectedPaper) params.set('paper', selectedPaper.id.toString());
+		else params.delete('paper');
+		if (activeTab !== 'papers') params.set('tab', activeTab);
+		else params.delete('tab');
+		if (searchQuery) params.set('q', searchQuery);
+		else params.delete('q');
+
+		const newUrl = `${window.location.pathname}?${params.toString()}`;
+		if (window.location.href !== newUrl) {
+			goto(newUrl, { replaceState: true, keepFocus: true, noScroll: true });
+		}
+	};
+
 	// Load user ID from localStorage on component initialization
 	const loadUserIdFromLocalStorage = () => {
 		if (typeof window !== 'undefined') {
@@ -103,10 +126,15 @@
 		try {
 			const response: Response = await fetch(`/api/userScores?user_id=${userId}`);
 
-			const data = await response.json();
+			const responseData = await response.json();
 
-			for (const item of data.scores) {
-				userMarks[item.paper_id + '-' + item.question_id] = parseInt(item.score);
+			// Check if responseData has a scores property and it is an array
+			if (responseData && Array.isArray(responseData.scores)) {
+				for (const item of responseData.scores) {
+					userMarks[item.paper_id + '-' + item.question_id] = parseInt(item.score);
+				}
+			} else {
+				console.warn('Received unexpected data structure from /api/userScores', responseData);
 			}
 		} catch (error) {
 			apiError = error instanceof Error ? error.message : 'An unknown error occured';
@@ -233,12 +261,14 @@
 	function selectSubject(id: string): void {
 		selectedSubject = id;
 		selectedPaper = null;
+		updateUrl();
 	}
 
 	// Select an exam board
 	function selectBoard(id: string): void {
 		selectedBoard = id;
 		selectedPaper = null;
+		updateUrl();
 	}
 
 	// Select a paper
@@ -249,6 +279,7 @@
 		if (userId) {
 			loadPaperScores(paper.id);
 		}
+		updateUrl();
 	}
 
 	// Load questions for selected paper
@@ -320,7 +351,9 @@
 		if (paperToShow) {
 			selectedSubject = paperToShow.subject;
 			selectedBoard = paperToShow.board;
-			selectPaper(paperToShow);
+			selectPaper(paperToShow); // This will call updateUrl
+		} else {
+			updateUrl();
 		}
 	}
 
@@ -383,7 +416,54 @@
 	}
 
 	onMount(() => {
-		loadAllPaperScores();
+		const params = page.url.searchParams;
+
+		const subjectFromUrl = params.get('subject');
+		if (subjectFromUrl && subjects.find(s => s.id === subjectFromUrl)) {
+			selectedSubject = subjectFromUrl;
+		}
+
+		const boardFromUrl = params.get('board');
+		if (boardFromUrl && examBoards.find(b => b.id === boardFromUrl)) {
+			selectedBoard = boardFromUrl;
+		}
+
+		const tabFromUrl = params.get('tab') as 'papers' | 'performance' | 'settings' | null;
+		if (tabFromUrl && ['papers', 'performance', 'settings'].includes(tabFromUrl)) {
+			activeTab = tabFromUrl;
+		}
+
+		const queryFromUrl = params.get('q');
+		if (queryFromUrl) {
+			searchQuery = queryFromUrl;
+		}
+
+		const paperIdFromUrl = params.get('paper');
+		if (paperIdFromUrl) {
+			const paperId = parseInt(paperIdFromUrl);
+			const paperFromUrl = pastPapers.find(p => p.id === paperId);
+			if (paperFromUrl) {
+				// Ensure subject and board are consistent if paper is directly loaded
+				if (!selectedSubject || selectedSubject !== paperFromUrl.subject) {
+					selectedSubject = paperFromUrl.subject;
+				}
+				if (!selectedBoard || selectedBoard !== paperFromUrl.board) {
+					selectedBoard = paperFromUrl.board;
+				}
+				selectPaper(paperFromUrl); // This also calls loadQuestions and loadPaperScores if userId is set
+			}
+		}
+		 // Load all paper scores after potentially setting userId from localStorage or URL
+		if (userId) {
+			loadAllPaperScores();
+		}
+		// Initial URL update in case some defaults were set but not in URL
+		updateUrl();
+
+		// Listen to changes in searchQuery to update URL
+		$effect(() => {
+			updateUrl();
+		});
 	});
 </script>
 
