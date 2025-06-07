@@ -315,6 +315,12 @@
 	// Reset marks for current paper
 	function resetMarks(): void {
 		if (selectedPaper) {
+			const confirmReset = confirm('Are you sure you want to reset all marks for this paper? This action cannot be undone.');
+			
+			if (!confirmReset) {
+				return;
+			}
+
 			questions.forEach((q) => {
 				const key = `${selectedPaper!.id}-${q.id}`;
 				userMarks[key] = 0;
