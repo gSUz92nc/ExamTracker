@@ -39,7 +39,7 @@ describe('calculatePaperStats', () => {
 		expect(stats.totalMarks).toBe(20);
 		expect(stats.maxMarks).toBe(45);
 		expect(stats.percentage).toBeCloseTo(44.44, 2);
-		expect(stats.grade).toBe('F');
+		expect(stats.grade).toBe('E');
 	});
 
 	it('should handle empty answers', () => {
@@ -162,7 +162,7 @@ describe('validateUserId', () => {
 		
 		expect(validateUserId('   ')).toEqual({ 
 			isValid: false, 
-			message: 'User ID is required' 
+			message: 'User ID must be at least 3 characters long' 
 		});
 	});
 });

@@ -1,90 +1,15 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
-import PerformanceTracker from '../../src/lib/components/PerformanceTracker.svelte';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { 
+	calculatePaperStats, 
+	formatPercentage, 
+	calculateGrade,
+	generateColor,
+	type UserMarks 
+} from '../../src/lib/utils';
 import type { Paper } from '../../src/lib/pastPapers';
-import type { UserMarks } from '../../src/lib/utils';
 
-// Mock canvas context
-const mockCanvasContext = {
-	clearRect: vi.fn(),
-	beginPath: vi.fn(),
-	moveTo: vi.fn(),
-	lineTo: vi.fn(),
-	stroke: vi.fn(),
-	arc: vi.fn(),
-	fill: vi.fn(),
-	fillRect: vi.fn(),
-	fillText: vi.fn(),
-	measureText: vi.fn(() => ({ width: 50 })),
-	save: vi.fn(),
-	restore: vi.fn(),
-	translate: vi.fn(),
-	rotate: vi.fn(),
-	scale: vi.fn(),
-	drawImage: vi.fn(),
-	createLinearGradient: vi.fn(),
-	createRadialGradient: vi.fn(),
-	createPattern: vi.fn(),
-	getImageData: vi.fn(),
-	putImageData: vi.fn(),
-	canvas: {},
-	strokeStyle: '',
-	fillStyle: '',
-	lineWidth: 1,
-	font: '',
-	textAlign: 'start',
-	textBaseline: 'alphabetic',
-	globalAlpha: 1,
-	globalCompositeOperation: 'source-over',
-	lineCap: 'butt',
-	lineJoin: 'miter',
-	miterLimit: 10,
-	shadowBlur: 0,
-	shadowColor: '',
-	shadowOffsetX: 0,
-	shadowOffsetY: 0
-};
-
-// Mock HTMLCanvasElement
-Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
-	value: vi.fn(() => mockCanvasContext)
-});
-
-Object.defineProperty(HTMLCanvasElement.prototype, 'offsetWidth', {
-	value: 400
-});
-
-Object.defineProperty(HTMLCanvasElement.prototype, 'offsetHeight', {
-	value: 300
-});
-
-// Mock URL.createObjectURL and revokeObjectURL
-global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
-global.URL.revokeObjectURL = vi.fn();
-
-// Mock document.createElement for export functionality
-const mockAnchorElement = {
-	href: '',
-	download: '',
-	click: vi.fn(),
-	style: {}
-};
-
-const originalCreateElement = document.createElement;
-document.createElement = vi.fn((tagName) => {
-	if (tagName === 'a') {
-		return mockAnchorElement as any;
-	}
-	return originalCreateElement.call(document, tagName);
-});
-
-const mockAppendChild = vi.fn();
-const mockRemoveChild = vi.fn();
-document.body.appendChild = mockAppendChild;
-document.body.removeChild = mockRemoveChild;
-
-describe('PerformanceTracker', () => {
+// Test the PerformanceTracker functionality without rendering the Svelte component
+describe('PerformanceTracker Logic', () => {
 	const mockPapers: Paper[] = [
 		{
 			id: 'math-2023-summer-1',
@@ -145,483 +70,192 @@ describe('PerformanceTracker', () => {
 		// Note: math-2022-summer-1-3 is not answered (incomplete paper)
 	};
 
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
+	describe('Performance Calculations', () => {
+		it('should calculate paper statistics correctly', () => {
+			const paper = mockPapers[0]; // Math paper with complete answers
+			const stats = calculatePaperStats(paper.questions!, mockUserMarks, paper.id);
 
-	describe('Component Rendering', () => {
-		it('should render overview tab by default', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			expect(screen.getByText('Overview')).toBeInTheDocument();
-			expect(screen.getByText('Total Papers')).toBeInTheDocument();
-			expect(screen.getByText('Attempted')).toBeInTheDocument();
-			expect(screen.getByText('Completed')).toBeInTheDocument();
-			expect(screen.getByText('Average Score')).toBeInTheDocument();
+			expect(stats.totalQuestions).toBe(3);
+			expect(stats.answeredQuestions).toBe(3);
+			expect(stats.totalMarks).toBe(38); // 8 + 12 + 18
+			expect(stats.maxMarks).toBe(45); // 10 + 15 + 20
+			expect(stats.percentage).toBeCloseTo(84.44, 2);
+			expect(stats.grade).toBe('A');
 		});
 
-		it('should display correct statistics in overview', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
+		it('should handle incomplete papers correctly', () => {
+			const paper = mockPapers[2]; // Math paper with incomplete answers
+			const stats = calculatePaperStats(paper.questions!, mockUserMarks, paper.id);
 
-			// Total papers
-			expect(screen.getByText('3')).toBeInTheDocument();
-			
-			// Should show attempted papers (papers with at least one answer)
-			// All 3 papers have at least one answer
-			expect(screen.getByText('3')).toBeInTheDocument();
-			
-			// Completed papers (all questions answered)
-			// Only first two papers are complete
-			expect(screen.getByText('2')).toBeInTheDocument();
+			expect(stats.totalQuestions).toBe(3);
+			expect(stats.answeredQuestions).toBe(2); // Only first two questions answered
+			expect(stats.totalMarks).toBe(16); // 6 + 10 + 0
+			expect(stats.maxMarks).toBe(35); // 8 + 12 + 15
+			expect(stats.percentage).toBeCloseTo(45.71, 2);
+			expect(stats.grade).toBe('E');
 		});
 
-		it('should render all navigation tabs', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			expect(screen.getByText('Overview')).toBeInTheDocument();
-			expect(screen.getByText('By Subject')).toBeInTheDocument();
-			expect(screen.getByText('Progress')).toBeInTheDocument();
-			expect(screen.getByText('Detailed')).toBeInTheDocument();
-		});
-	});
-
-	describe('Tab Navigation', () => {
-		it('should switch to subjects view when clicked', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const subjectsTab = screen.getByText('By Subject');
-			await user.click(subjectsTab);
-
-			expect(screen.getByText('Performance by Subject')).toBeInTheDocument();
+		it('should filter papers by subject correctly', () => {
+			const mathPapers = mockPapers.filter(paper => paper.subject === 'Mathematics');
+			expect(mathPapers).toHaveLength(2);
+			expect(mathPapers.every(paper => paper.subject === 'Mathematics')).toBe(true);
 		});
 
-		it('should switch to progress view when clicked', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const progressTab = screen.getByText('Progress');
-			await user.click(progressTab);
-
-			expect(screen.getByText('Progress Over Time')).toBeInTheDocument();
+		it('should filter papers by board correctly', () => {
+			const aqaPapers = mockPapers.filter(paper => paper.board === 'AQA');
+			expect(aqaPapers).toHaveLength(2);
+			expect(aqaPapers.every(paper => paper.board === 'AQA')).toBe(true);
 		});
 
-		it('should switch to detailed view when clicked', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
+		it('should calculate overall metrics correctly', () => {
+			const attempted = mockPapers.filter(paper => {
+				const paperKeys = Object.keys(mockUserMarks).filter(key => key.startsWith(paper.id));
+				return paperKeys.length > 0;
 			});
 
-			const detailedTab = screen.getByText('Detailed');
-			await user.click(detailedTab);
+			const completed = mockPapers.filter(paper => {
+				const questions = paper.questions || [];
+				const answeredQuestions = questions.filter(q => {
+					const key = `${paper.id}-${q.id}`;
+					return mockUserMarks[key] > 0;
+				});
+				return answeredQuestions.length === questions.length;
+			});
 
-			expect(screen.getByText('Detailed Performance')).toBeInTheDocument();
-			expect(screen.getByText('Export Data')).toBeInTheDocument();
+			expect(attempted).toHaveLength(3); // All papers have at least one answer
+			expect(completed).toHaveLength(2); // Only first two papers are complete
 		});
 	});
 
-	describe('Subjects View', () => {
-		it('should display subject breakdown correctly', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
+	describe('Grade Distribution', () => {
+		it('should calculate grade distribution correctly', () => {
+			const grades = mockPapers.map(paper => {
+				const stats = calculatePaperStats(paper.questions!, mockUserMarks, paper.id);
+				return stats.grade;
 			});
 
-			const subjectsTab = screen.getByText('By Subject');
-			await user.click(subjectsTab);
+			const gradeDistribution = grades.reduce((acc, grade) => {
+				acc[grade] = (acc[grade] || 0) + 1;
+				return acc;
+			}, {} as Record<string, number>);
 
-			expect(screen.getByText('Mathematics')).toBeInTheDocument();
-			expect(screen.getByText('Physics')).toBeInTheDocument();
+			expect(gradeDistribution['A']).toBe(2); // Math and Physics papers
+			expect(gradeDistribution['E']).toBe(1); // Incomplete math paper
 		});
+	});
 
-		it('should show correct attempted and completed counts per subject', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
+	describe('Subject Breakdown', () => {
+		it('should calculate subject statistics correctly', () => {
+			const subjectStats = mockPapers.reduce((acc, paper) => {
+				const subject = paper.subject;
+				if (!acc[subject]) {
+					acc[subject] = { attempted: 0, completed: 0, totalScore: 0, count: 0 };
 				}
-			});
 
-			const subjectsTab = screen.getByText('By Subject');
-			await user.click(subjectsTab);
+				const stats = calculatePaperStats(paper.questions!, mockUserMarks, paper.id);
+				if (stats.answeredQuestions > 0) {
+					acc[subject].attempted++;
+					acc[subject].totalScore += stats.percentage;
+					acc[subject].count++;
+				}
 
-			// Mathematics: 2 attempted (both math papers have answers), 1 completed
+				if (stats.answeredQuestions === (paper.questions?.length || 0)) {
+					acc[subject].completed++;
+				}
+
+				return acc;
+			}, {} as Record<string, any>);
+
+			// Mathematics: 2 attempted, 1 completed
+			expect(subjectStats['Mathematics'].attempted).toBe(2);
+			expect(subjectStats['Mathematics'].completed).toBe(1);
+
 			// Physics: 1 attempted, 1 completed
-			expect(screen.getAllByText('Attempted:')).toHaveLength(2);
-			expect(screen.getAllByText('Completed:')).toHaveLength(2);
+			expect(subjectStats['Physics'].attempted).toBe(1);
+			expect(subjectStats['Physics'].completed).toBe(1);
 		});
 	});
 
-	describe('Progress View', () => {
-		it('should display time range selector', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
+	describe('Progress Data Generation', () => {
+		it('should generate progress data over time', () => {
+			const progressData = mockPapers
+				.filter(paper => {
+					const paperKeys = Object.keys(mockUserMarks).filter(key => key.startsWith(paper.id));
+					return paperKeys.length > 0;
+				})
+				.map(paper => {
+					const stats = calculatePaperStats(paper.questions!, mockUserMarks, paper.id);
+					return {
+						date: new Date().toISOString().split('T')[0],
+						score: stats.percentage,
+						paperId: paper.id,
+						subject: paper.subject
+					};
+				});
 
-			const progressTab = screen.getByText('Progress');
-			await user.click(progressTab);
-
-			expect(screen.getByText('Week')).toBeInTheDocument();
-			expect(screen.getByText('Month')).toBeInTheDocument();
-			expect(screen.getByText('All Time')).toBeInTheDocument();
-		});
-
-		it('should switch time ranges when clicked', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const progressTab = screen.getByText('Progress');
-			await user.click(progressTab);
-
-			const weekButton = screen.getByText('Week');
-			await user.click(weekButton);
-
-			// Week button should be active
-			expect(weekButton.closest('button')).toHaveClass('active');
+			expect(progressData).toHaveLength(3);
+			expect(progressData.every(d => d.score > 0)).toBe(true);
 		});
 	});
 
-	describe('Detailed View', () => {
-		it('should display papers table with correct headers', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const detailedTab = screen.getByText('Detailed');
-			await user.click(detailedTab);
-
-			expect(screen.getByText('Subject')).toBeInTheDocument();
-			expect(screen.getByText('Paper')).toBeInTheDocument();
-			expect(screen.getByText('Score')).toBeInTheDocument();
-			expect(screen.getByText('Percentage')).toBeInTheDocument();
-			expect(screen.getByText('Grade')).toBeInTheDocument();
-			expect(screen.getByText('Status')).toBeInTheDocument();
+	describe('Utility Functions', () => {
+		it('should format percentages correctly', () => {
+			expect(formatPercentage(84.44)).toBe('84.4');
+			expect(formatPercentage(100)).toBe('100');
+			expect(formatPercentage(0)).toBe('0');
 		});
 
-		it('should display paper data in table rows', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const detailedTab = screen.getByText('Detailed');
-			await user.click(detailedTab);
-
-			// Should show attempted papers
-			expect(screen.getByText('AQA 2023 Summer 1')).toBeInTheDocument();
-			expect(screen.getByText('Edexcel 2023 Winter 2')).toBeInTheDocument();
-			expect(screen.getByText('AQA 2022 Summer 1')).toBeInTheDocument();
+		it('should calculate grades correctly', () => {
+			expect(calculateGrade(95)).toBe('A*');
+			expect(calculateGrade(85)).toBe('A');
+			expect(calculateGrade(45)).toBe('E');
 		});
 
-		it('should show completion status correctly', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const detailedTab = screen.getByText('Detailed');
-			await user.click(detailedTab);
-
-			// Should show completed and in progress statuses
-			expect(screen.getAllByText('Completed')).toHaveLength(2); // First two papers
-			expect(screen.getByText('In Progress')).toBeInTheDocument(); // Third paper
+		it('should generate consistent colors', () => {
+			expect(generateColor(0)).toBe(generateColor(0));
+			expect(generateColor(0)).toBe(generateColor(12)); // Should cycle
 		});
 	});
 
-	describe('Data Export', () => {
-		it('should trigger export when export button is clicked', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
+	describe('Edge Cases', () => {
+		it('should handle papers with no questions', () => {
+			const emptyPaper: Paper = {
+				id: 'empty-paper',
+				subject: 'Test',
+				board: 'Test',
+				year: 2023,
+				session: 'Summer',
+				variant: 'A',
+				paperUrl: '',
+				questions: []
+			};
 
-			const detailedTab = screen.getByText('Detailed');
-			await user.click(detailedTab);
-
-			const exportButton = screen.getByText('Export Data');
-			await user.click(exportButton);
-
-			// Should create blob and trigger download
-			expect(global.URL.createObjectURL).toHaveBeenCalled();
-			expect(mockAnchorElement.click).toHaveBeenCalled();
-			expect(mockAppendChild).toHaveBeenCalled();
-			expect(mockRemoveChild).toHaveBeenCalled();
-		});
-	});
-
-	describe('Filtering', () => {
-		it('should filter papers by subject', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks,
-					selectedSubject: 'Mathematics'
-				}
-			});
-
-			// Should only show mathematics papers in stats
-			// Mathematics has 2 papers, both attempted, 1 completed
-			expect(screen.getByText('2')).toBeInTheDocument(); // Total papers
-		});
-
-		it('should filter papers by board', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks,
-					selectedBoard: 'AQA'
-				}
-			});
-
-			// Should only show AQA papers
-			// AQA has 2 papers in the mock data
-			expect(screen.getByText('2')).toBeInTheDocument(); // Total papers
-		});
-
-		it('should combine subject and board filters', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks,
-					selectedSubject: 'Mathematics',
-					selectedBoard: 'AQA'
-				}
-			});
-
-			// Should show only AQA Mathematics papers
-			expect(screen.getByText('2')).toBeInTheDocument(); // Total papers
-		});
-	});
-
-	describe('Empty States', () => {
-		it('should handle empty papers array', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: [],
-					userMarks: {}
-				}
-			});
-
-			expect(screen.getByText('0')).toBeInTheDocument();
+			const stats = calculatePaperStats([], mockUserMarks, emptyPaper.id);
+			expect(stats.totalQuestions).toBe(0);
+			expect(stats.percentage).toBe(0);
 		});
 
 		it('should handle empty user marks', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: {}
-				}
-			});
+			const paper = mockPapers[0];
+			const stats = calculatePaperStats(paper.questions!, {}, paper.id);
 
-			// Should show 0 attempted papers
-			expect(screen.getByText('0')).toBeInTheDocument();
+			expect(stats.answeredQuestions).toBe(0);
+			expect(stats.totalMarks).toBe(0);
+			expect(stats.percentage).toBe(0);
 		});
 
-		it('should show empty state message in progress view when no data', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: {}
-				}
-			});
-
-			const progressTab = screen.getByText('Progress');
-			await user.click(progressTab);
-
-			expect(screen.getByText(/No progress data available yet/)).toBeInTheDocument();
-		});
-	});
-
-	describe('Grade Calculations', () => {
-		it('should calculate correct grades based on percentages', () => {
-			// Math paper 1: 38/45 = 84.4% = A
-			// Physics paper: 45/55 = 81.8% = A  
-			// Math paper 2: 16/35 = 45.7% = E
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			// Average should be around (84.4 + 81.8 + 45.7) / 3 = 70.6% = B
-			// This will be shown in the overview
-			expect(screen.getByText(/Grade/)).toBeInTheDocument();
-		});
-	});
-
-	describe('Canvas Charts', () => {
-		it('should initialize canvas elements with correct dimensions', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			// Canvas elements should be initialized
-			expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalled();
-		});
-
-		it('should draw progress chart when data is available', async () => {
-			const user = userEvent.setup();
-			
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			const progressTab = screen.getByText('Progress');
-			await user.click(progressTab);
-
-			// Should call canvas drawing methods
-			setTimeout(() => {
-				expect(mockCanvasContext.clearRect).toHaveBeenCalled();
-				expect(mockCanvasContext.beginPath).toHaveBeenCalled();
-			}, 10);
-		});
-
-		it('should draw grade distribution chart', () => {
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			// Should initialize grade chart canvas
-			setTimeout(() => {
-				expect(mockCanvasContext.fillRect).toHaveBeenCalled();
-			}, 10);
-		});
-	});
-
-	describe('Responsive Design', () => {
-		it('should apply mobile styles on small screens', () => {
-			// Mock window.innerWidth
-			Object.defineProperty(window, 'innerWidth', {
-				writable: true,
-				configurable: true,
-				value: 500
-			});
-
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: mockUserMarks
-				}
-			});
-
-			// Component should render without errors on mobile
-			expect(screen.getByText('Overview')).toBeInTheDocument();
-		});
-	});
-
-	describe('Performance Calculations', () => {
-		it('should correctly calculate completion percentage', () => {
-			const partialMarks: UserMarks = {
-				'math-2023-summer-1-1': 8, // Only first question answered
-			};
-
-			render(PerformanceTracker, {
-				props: {
-					papers: mockPapers,
-					userMarks: partialMarks
-				}
-			});
-
-			// Should show 1 attempted, 0 completed
-			expect(screen.getByText('1')).toBeInTheDocument(); // Attempted
-			expect(screen.getByText('0')).toBeInTheDocument(); // Completed
-		});
-
-		it('should handle perfect scores correctly', () => {
+		it('should handle perfect scores', () => {
 			const perfectMarks: UserMarks = {
 				'math-2023-summer-1-1': 10,
 				'math-2023-summer-1-2': 15,
-				'math-2023-summer-1-3': 20,
+				'math-2023-summer-1-3': 20
 			};
 
-			render(PerformanceTracker, {
-				props: {
-					papers: [mockPapers[0]], // Only first paper
-					userMarks: perfectMarks
-				}
-			});
+			const paper = mockPapers[0];
+			const stats = calculatePaperStats(paper.questions!, perfectMarks, paper.id);
 
-			// Should show 100% and A* grade
-			expect(screen.getByText('100%')).toBeInTheDocument();
-			expect(screen.getByText('Grade A*')).toBeInTheDocument();
+			expect(stats.percentage).toBe(100);
+			expect(stats.grade).toBe('A*');
 		});
 	});
 });

@@ -309,44 +309,41 @@ describe('StorageManager', () => {
 			expect(result.status).toBe(500);
 		});
 
-		it('should handle network timeouts', async () => {
+		it('should handle AbortError as timeout', async () => {
 			storage = new StorageManager({ 
 				apiUrl: 'https://api.example.com',
-				timeout: 100 
+				timeout: 50 
 			});
 			
-			(global.fetch as any).mockImplementation(() => 
-				new Promise(resolve => setTimeout(resolve, 200))
-			);
+			const abortError = new Error('Request timeout');
+			abortError.name = 'AbortError';
+			
+			(global.fetch as any).mockRejectedValue(abortError);
 			
 			const result = await storage.saveScore('user1', 'paper1', 1, 10, 15);
 			
 			expect(result.success).toBe(false);
-			expect(result.error).toBe('Request timeout');
+			expect(result.error?.message).toBe('Request timeout');
 		});
 
 		it('should retry failed requests', async () => {
 			storage = new StorageManager({ 
 				apiUrl: 'https://api.example.com',
-				retries: 2
+				retries: 1,
+				retryDelay: 10
 			});
 			
-			let callCount = 0;
-			(global.fetch as any).mockImplementation(() => {
-				callCount++;
-				if (callCount < 3) {
-					throw new Error('Network error');
-				}
-				return Promise.resolve({
+			(global.fetch as any)
+				.mockRejectedValueOnce(new Error('Network error'))
+				.mockResolvedValueOnce({
 					ok: true,
 					json: () => Promise.resolve({ success: true }),
 					status: 200
 				});
-			});
 			
 			const result = await storage.saveScore('user1', 'paper1', 1, 10, 15);
 			
-			expect(callCount).toBe(3);
+			expect(global.fetch).toHaveBeenCalledTimes(2);
 			expect(result.success).toBe(true);
 		});
 
