@@ -53,3 +53,9 @@ lerna-debug.log*
 # Testing
 /coverage
 /.nyc_output
+/tests/coverage
+
+# Temporary files
+/temp
+*.tmp
+*.temp
