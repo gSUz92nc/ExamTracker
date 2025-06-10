@@ -38,10 +38,23 @@
 	let selectedSubject = $state<string | null>(null);
 	let selectedBoard = $state<string | null>(null);
 	let selectedPaper = $state<Paper | null>(null);
-	let activeTab = $state<'papers' | 'performance' | 'settings'>('papers');
+	let activeTab = $state<'papers' | 'performance' | 'settings' | 'statistics' | 'timer'>('papers');
 	let userId = $state<string>('');
 	let loadingScores = $state<boolean>(false);
 	let apiError = $state<string | null>(null);
+
+	// Timer state
+	let isTimerRunning = $state<boolean>(false);
+	let timerSeconds = $state<number>(0);
+	let timerInterval: number | null = null;
+	let timerPaper = $state<Paper | null>(null);
+	let timerStartTime = $state<Date | null>(null);
+
+	// Statistics state
+	let totalStudyTime = $state<number>(0);
+	let papersCompleted = $state<number>(0);
+	let averageScore = $state<number>(0);
+	let streak = $state<number>(0);
 
 	// Questions for selected paper (simulated)
 	let questions = $state<Question[]>([]);
@@ -65,11 +78,7 @@
 	const examBoards: ExamBoard[] = [
 		{ id: 'ocr', name: 'OCR' },
 		{ id: 'edexcel', name: 'Edexcel' },
-		{ id: 'aqa', name: 'AQA' },
-		{ id: 'ccea', name: 'CCEA' },
-		{ id: 'wjec', name: 'WJEC' },
-		{ id: 'ib', name: 'IB' },
-		{ id: 'cambridge', name: 'Cambridge' }
+		{ id: 'aqa', name: 'AQA' }
 	];
 
 	// Function to update URL query parameters
@@ -100,9 +109,12 @@
 				const storedUserId = localStorage.getItem(USER_ID_KEY);
 				if (storedUserId) {
 					userId = storedUserId;
+					loadAllPaperScores(); // Load scores when user ID is loaded
 				}
+				// Calculate statistics on load
+				calculateStatistics();
 			} catch (error) {
-				console.error('Failed to load user ID from localStorage:', error);
+				console.warn('Failed to load user ID from localStorage:', error);
 			}
 		}
 	};
@@ -334,6 +346,132 @@
 		}
 	}
 
+	// Timer functions
+	function startTimer(paper?: Paper): void {
+		if (isTimerRunning) return;
+		
+		isTimerRunning = true;
+		timerPaper = paper || selectedPaper;
+		timerStartTime = new Date();
+		timerSeconds = 0;
+		
+		timerInterval = setInterval(() => {
+			timerSeconds++;
+		}, 1000);
+	}
+
+	function pauseTimer(): void {
+		if (timerInterval) {
+			clearInterval(timerInterval);
+			timerInterval = null;
+		}
+		isTimerRunning = false;
+	}
+
+	function stopTimer(): void {
+		if (timerInterval) {
+			clearInterval(timerInterval);
+			timerInterval = null;
+		}
+		
+		// Save study time to localStorage
+		if (timerSeconds > 0) {
+			const currentTotal = parseInt(localStorage.getItem('totalStudyTime') || '0');
+			totalStudyTime = currentTotal + timerSeconds;
+			localStorage.setItem('totalStudyTime', totalStudyTime.toString());
+		}
+		
+		isTimerRunning = false;
+		timerSeconds = 0;
+		timerPaper = null;
+		timerStartTime = null;
+	}
+
+	function resetTimer(): void {
+		stopTimer();
+	}
+
+	function formatTime(seconds: number): string {
+		const hours = Math.floor(seconds / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
+		const secs = seconds % 60;
+		
+		if (hours > 0) {
+			return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+		}
+		return `${minutes}:${secs.toString().padStart(2, '0')}`;
+	}
+
+	// Statistics functions
+	function calculateStatistics(): void {
+		// Calculate papers completed
+		const completedPapers = pastPapers.filter(paper => {
+			const paperQuestions = paper.questions || [];
+			if (paperQuestions.length === 0) return false;
+			
+			return paperQuestions.every(q => {
+				const key = `${paper.id}-${q.id}`;
+				return userMarks[key] !== undefined && userMarks[key] > 0;
+			});
+		});
+		
+		papersCompleted = completedPapers.length;
+		
+		// Calculate average score
+		if (completedPapers.length > 0) {
+			const totalPercentage = completedPapers.reduce((sum, paper) => {
+				const paperScore = getPaperScoreData(paper.id);
+				return sum + paperScore.percentage;
+			}, 0);
+			averageScore = Math.round(totalPercentage / completedPapers.length);
+		} else {
+			averageScore = 0;
+		}
+		
+		// Load total study time
+		totalStudyTime = parseInt(localStorage.getItem('totalStudyTime') || '0');
+		
+		// Calculate streak (consecutive days with activity)
+		streak = calculateStreak();
+	}
+
+	function calculateStreak(): number {
+		const today = new Date();
+		let currentStreak = 0;
+		let checkDate = new Date(today);
+		
+		// Check each day backwards to find consecutive days with activity
+		for (let i = 0; i < 365; i++) { // Max 1 year
+			const dateKey = checkDate.toISOString().split('T')[0];
+			const hasActivity = localStorage.getItem(`activity-${dateKey}`) === 'true';
+			
+			if (hasActivity) {
+				currentStreak++;
+				checkDate.setDate(checkDate.getDate() - 1);
+			} else {
+				break;
+			}
+		}
+		
+		return currentStreak;
+	}
+
+	function markTodayAsActive(): void {
+		const today = new Date().toISOString().split('T')[0];
+		localStorage.setItem(`activity-${today}`, 'true');
+	}
+
+	function getGradeFromPercentage(percentage: number): string {
+		if (percentage >= 90) return 'A*';
+		if (percentage >= 80) return 'A';
+		if (percentage >= 70) return 'B';
+		if (percentage >= 60) return 'C';
+		if (percentage >= 50) return 'D';
+		if (percentage >= 40) return 'E';
+		if (percentage >= 30) return 'F';
+		return 'U';
+	}
+
 	// Save user ID and attempt to load any existing scores
 	function saveUserId(): void {
 		if (!userId.trim()) {
@@ -351,7 +489,7 @@
 	}
 
 	// Switch between tabs
-	function setActiveTab(tab: 'papers' | 'performance' | 'settings', paperToShow?: Paper): void {
+	function setActiveTab(tab: 'papers' | 'performance' | 'settings' | 'statistics' | 'timer', paperToShow?: Paper): void {
 		activeTab = tab;
 
 		if (paperToShow) {
@@ -434,8 +572,8 @@
 			selectedBoard = boardFromUrl;
 		}
 
-		const tabFromUrl = params.get('tab') as 'papers' | 'performance' | 'settings' | null;
-		if (tabFromUrl && ['papers', 'performance', 'settings'].includes(tabFromUrl)) {
+		const tabFromUrl = params.get('tab') as 'papers' | 'performance' | 'settings' | 'statistics' | 'timer' | null;
+		if (tabFromUrl && ['papers', 'performance', 'settings', 'statistics', 'timer'].includes(tabFromUrl)) {
 			activeTab = tabFromUrl;
 		}
 
@@ -504,6 +642,20 @@
 					class="nav-link"
 					class:active={activeTab === 'settings'}
 					onclick={() => setActiveTab('settings')}>Settings</button
+				>
+			</li>
+			<li>
+				<button
+					class="nav-link"
+					class:active={activeTab === 'statistics'}
+					onclick={() => setActiveTab('statistics')}>Statistics</button
+				>
+			</li>
+			<li>
+				<button
+					class="nav-link"
+					class:active={activeTab === 'timer'}
+					onclick={() => setActiveTab('timer')}>Timer</button
 				>
 			</li>
 		</ul>
@@ -803,6 +955,183 @@
 							{/each}
 						</ul>
 					{/if}
+				</div>
+			</div>
+		{:else if activeTab === 'statistics'}
+			<div class="statistics-tab">
+				<h2>📊 Statistics Dashboard</h2>
+
+				<div class="stats-grid">
+					<div class="stat-card">
+						<div class="stat-icon">📚</div>
+						<div class="stat-content">
+							<div class="stat-number">{papersCompleted}</div>
+							<div class="stat-label">Papers Completed</div>
+						</div>
+					</div>
+
+					<div class="stat-card">
+						<div class="stat-icon">⭐</div>
+						<div class="stat-content">
+							<div class="stat-number">{averageScore}%</div>
+							<div class="stat-label">Average Score</div>
+							<div class="stat-grade">Grade {getGradeFromPercentage(averageScore)}</div>
+						</div>
+					</div>
+
+					<div class="stat-card">
+						<div class="stat-icon">⏱️</div>
+						<div class="stat-content">
+							<div class="stat-number">{formatTime(totalStudyTime)}</div>
+							<div class="stat-label">Total Study Time</div>
+						</div>
+					</div>
+
+					<div class="stat-card">
+						<div class="stat-icon">🔥</div>
+						<div class="stat-content">
+							<div class="stat-number">{streak}</div>
+							<div class="stat-label">Day Streak</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="progress-overview">
+					<h3>Progress Overview</h3>
+					<div class="progress-chart">
+						{#each subjects as subject}
+							{@const subjectPapers = pastPapers.filter(p => p.subject === subject.id)}
+							{@const completedSubjectPapers = subjectPapers.filter(paper => {
+								const paperQuestions = paper.questions || [];
+								return paperQuestions.length > 0 && paperQuestions.every(q => {
+									const key = `${paper.id}-${q.id}`;
+									return userMarks[key] !== undefined && userMarks[key] > 0;
+								});
+							})}
+							{#if subjectPapers.length > 0}
+								<div class="subject-progress">
+									<div class="subject-header">
+										<span class="subject-name">{subject.name}</span>
+										<span class="progress-text">{completedSubjectPapers.length}/{subjectPapers.length}</span>
+									</div>
+									<div class="progress-bar-container">
+										<div class="progress-bar" style="width: {(completedSubjectPapers.length / subjectPapers.length) * 100}%"></div>
+									</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				</div>
+
+				<div class="achievement-section">
+					<h3>🏆 Achievements</h3>
+					<div class="achievements-grid">
+						<div class="achievement" class:unlocked={papersCompleted >= 1}>
+							<div class="achievement-icon">🎯</div>
+							<div class="achievement-title">First Paper</div>
+							<div class="achievement-desc">Complete your first paper</div>
+						</div>
+						<div class="achievement" class:unlocked={papersCompleted >= 5}>
+							<div class="achievement-icon">📈</div>
+							<div class="achievement-title">Getting Started</div>
+							<div class="achievement-desc">Complete 5 papers</div>
+						</div>
+						<div class="achievement" class:unlocked={averageScore >= 80}>
+							<div class="achievement-icon">⭐</div>
+							<div class="achievement-title">High Achiever</div>
+							<div class="achievement-desc">Maintain 80% average</div>
+						</div>
+						<div class="achievement" class:unlocked={streak >= 7}>
+							<div class="achievement-icon">🔥</div>
+							<div class="achievement-title">Week Warrior</div>
+							<div class="achievement-desc">7-day study streak</div>
+						</div>
+						<div class="achievement" class:unlocked={totalStudyTime >= 3600}>
+							<div class="achievement-icon">⏰</div>
+							<div class="achievement-title">Time Master</div>
+							<div class="achievement-desc">1 hour total study time</div>
+						</div>
+						<div class="achievement" class:unlocked={papersCompleted >= 25}>
+							<div class="achievement-icon">🎓</div>
+							<div class="achievement-title">Scholar</div>
+							<div class="achievement-desc">Complete 25 papers</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{:else if activeTab === 'timer'}
+			<div class="timer-tab">
+				<h2>⏱️ Study Timer</h2>
+
+				<div class="timer-main">
+					<div class="timer-display">
+						<div class="time-display">{formatTime(timerSeconds)}</div>
+						{#if timerPaper}
+							<div class="timer-paper">
+								Currently studying: <strong>{timerPaper.board} {timerPaper.year} {timerPaper.session} {timerPaper.variant}</strong>
+							</div>
+						{/if}
+					</div>
+
+					<div class="timer-controls">
+						{#if !isTimerRunning}
+							<button class="timer-btn start-btn" onclick={() => startTimer()}>
+								▶️ Start Timer
+							</button>
+						{:else}
+							<button class="timer-btn pause-btn" onclick={pauseTimer}>
+								⏸️ Pause
+							</button>
+						{/if}
+		
+						<button class="timer-btn stop-btn" onclick={stopTimer}>
+							⏹️ Stop
+						</button>
+		
+						<button class="timer-btn reset-btn" onclick={resetTimer}>
+							🔄 Reset
+						</button>
+					</div>
+
+					{#if selectedPaper && !isTimerRunning}
+						<div class="timer-suggestion">
+							<p>Start a timer for the currently selected paper:</p>
+							<button class="timer-btn suggested-btn" onclick={() => startTimer(selectedPaper)}>
+								⏱️ Time {selectedPaper.board} {selectedPaper.year} {selectedPaper.session} {selectedPaper.variant}
+							</button>
+						</div>
+					{/if}
+				</div>
+
+				<div class="timer-stats">
+					<h3>Timer Statistics</h3>
+					<div class="timer-stats-grid">
+						<div class="timer-stat">
+							<span class="stat-label">Session Time:</span>
+							<span class="stat-value">{formatTime(timerSeconds)}</span>
+						</div>
+						<div class="timer-stat">
+							<span class="stat-label">Total Study Time:</span>
+							<span class="stat-value">{formatTime(totalStudyTime)}</span>
+						</div>
+						{#if timerStartTime}
+							<div class="timer-stat">
+								<span class="stat-label">Started At:</span>
+								<span class="stat-value">{timerStartTime.toLocaleTimeString()}</span>
+							</div>
+						{/if}
+					</div>
+				</div>
+
+				<div class="timer-tips">
+					<h3>💡 Study Tips</h3>
+					<ul class="tips-list">
+						<li>Take a 5-10 minute break every 25-30 minutes (Pomodoro Technique)</li>
+						<li>Find a quiet environment to minimize distractions</li>
+						<li>Review your answers after completing each paper</li>
+						<li>Track your progress regularly to stay motivated</li>
+						<li>Focus on understanding concepts, not just memorizing</li>
+					</ul>
 				</div>
 			</div>
 		{:else if activeTab === 'settings'}
@@ -1627,5 +1956,345 @@
 
 	.warning-text strong {
 		color: #ff9e64;
+	}
+
+	/* Statistics Tab Styles */
+	.statistics-tab {
+		padding: 20px;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 20px;
+		margin-bottom: 30px;
+	}
+
+	.stat-card {
+		background-color: #2a2a2a;
+		border: 1px solid #444;
+		border-radius: 8px;
+		padding: 20px;
+		text-align: center;
+		transition: transform 0.2s ease;
+	}
+
+	.stat-card:hover {
+		transform: translateY(-2px);
+		border-color: #57c7ff;
+	}
+
+	.stat-icon {
+		font-size: 2rem;
+		margin-bottom: 10px;
+	}
+
+	.stat-number {
+		font-size: 2.5rem;
+		font-weight: bold;
+		color: #57c7ff;
+		margin-bottom: 5px;
+	}
+
+	.stat-label {
+		color: #aaa;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+
+	.stat-grade {
+		color: #4ade80;
+		font-weight: bold;
+		margin-top: 5px;
+	}
+
+	.progress-overview {
+		margin-bottom: 30px;
+	}
+
+	.progress-chart {
+		background-color: #2a2a2a;
+		border: 1px solid #444;
+		border-radius: 8px;
+		padding: 20px;
+	}
+
+	.subject-progress {
+		margin-bottom: 15px;
+	}
+
+	.subject-header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 8px;
+	}
+
+	.subject-name {
+		font-weight: bold;
+		color: #f0f0f0;
+	}
+
+	.progress-text {
+		color: #aaa;
+		font-size: 0.9rem;
+	}
+
+	.progress-bar-container {
+		background-color: #1a1a1a;
+		border-radius: 10px;
+		height: 8px;
+		overflow: hidden;
+	}
+
+	.progress-bar {
+		background: linear-gradient(90deg, #57c7ff, #4ade80);
+		height: 100%;
+		border-radius: 10px;
+		transition: width 0.3s ease;
+	}
+
+	.achievement-section {
+		margin-top: 30px;
+	}
+
+	.achievements-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 15px;
+		margin-top: 20px;
+	}
+
+	.achievement {
+		background-color: #2a2a2a;
+		border: 1px solid #444;
+		border-radius: 8px;
+		padding: 15px;
+		display: flex;
+		align-items: center;
+		gap: 15px;
+		opacity: 0.5;
+		transition: all 0.3s ease;
+	}
+
+	.achievement.unlocked {
+		opacity: 1;
+		border-color: #4ade80;
+		background-color: rgba(74, 222, 128, 0.1);
+	}
+
+	.achievement-icon {
+		font-size: 2rem;
+		width: 40px;
+		text-align: center;
+	}
+
+	.achievement-title {
+		font-weight: bold;
+		color: #f0f0f0;
+		margin-bottom: 5px;
+	}
+
+	.achievement-desc {
+		color: #aaa;
+		font-size: 0.85rem;
+	}
+
+	/* Timer Tab Styles */
+	.timer-tab {
+		padding: 20px;
+		max-width: 600px;
+		margin: 0 auto;
+	}
+
+	.timer-main {
+		text-align: center;
+		margin-bottom: 40px;
+	}
+
+	.timer-display {
+		background-color: #2a2a2a;
+		border: 2px solid #444;
+		border-radius: 12px;
+		padding: 40px 20px;
+		margin-bottom: 30px;
+	}
+
+	.time-display {
+		font-size: 4rem;
+		font-weight: bold;
+		color: #57c7ff;
+		font-family: 'Courier New', monospace;
+		margin-bottom: 10px;
+	}
+
+	.timer-paper {
+		color: #aaa;
+		font-size: 1rem;
+	}
+
+	.timer-controls {
+		display: flex;
+		justify-content: center;
+		gap: 15px;
+		flex-wrap: wrap;
+		margin-bottom: 30px;
+	}
+
+	.timer-btn {
+		background-color: #2a2a2a;
+		border: 1px solid #444;
+		color: #f0f0f0;
+		padding: 12px 24px;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-size: 1rem;
+		min-width: 120px;
+	}
+
+	.timer-btn:hover {
+		background-color: #3a3a3a;
+		transform: translateY(-1px);
+	}
+
+	.start-btn {
+		background-color: #4ade80;
+		border-color: #4ade80;
+		color: #000;
+	}
+
+	.start-btn:hover {
+		background-color: #22c55e;
+	}
+
+	.pause-btn {
+		background-color: #fbbf24;
+		border-color: #fbbf24;
+		color: #000;
+	}
+
+	.pause-btn:hover {
+		background-color: #f59e0b;
+	}
+
+	.stop-btn {
+		background-color: #ef4444;
+		border-color: #ef4444;
+		color: #fff;
+	}
+
+	.stop-btn:hover {
+		background-color: #dc2626;
+	}
+
+	.reset-btn {
+		background-color: #6b7280;
+		border-color: #6b7280;
+		color: #fff;
+	}
+
+	.reset-btn:hover {
+		background-color: #4b5563;
+	}
+
+	.suggested-btn {
+		background-color: #8b5cf6;
+		border-color: #8b5cf6;
+		color: #fff;
+	}
+
+	.suggested-btn:hover {
+		background-color: #7c3aed;
+	}
+
+	.timer-suggestion {
+		background-color: rgba(139, 92, 246, 0.1);
+		border: 1px solid #8b5cf6;
+		border-radius: 8px;
+		padding: 20px;
+		margin-top: 20px;
+	}
+
+	.timer-suggestion p {
+		margin-bottom: 15px;
+		color: #d1d5db;
+	}
+
+	.timer-stats {
+		background-color: #2a2a2a;
+		border: 1px solid #444;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 30px;
+	}
+
+	.timer-stats-grid {
+		display: grid;
+		gap: 10px;
+		margin-top: 15px;
+	}
+
+	.timer-stat {
+		display: flex;
+		justify-content: space-between;
+		padding: 8px 0;
+		border-bottom: 1px solid #333;
+	}
+
+	.timer-stat:last-child {
+		border-bottom: none;
+	}
+
+	.timer-stat .stat-label {
+		color: #aaa;
+	}
+
+	.timer-stat .stat-value {
+		color: #57c7ff;
+		font-weight: bold;
+	}
+
+	.timer-tips {
+		background-color: #2a2a2a;
+		border: 1px solid #444;
+		border-radius: 8px;
+		padding: 20px;
+	}
+
+	.tips-list {
+		margin-top: 15px;
+		padding-left: 20px;
+	}
+
+	.tips-list li {
+		color: #d1d5db;
+		margin-bottom: 8px;
+		line-height: 1.5;
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 768px) {
+		.stats-grid {
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			gap: 15px;
+		}
+
+		.achievements-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.timer-controls {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.timer-btn {
+			width: 200px;
+		}
+
+		.time-display {
+			font-size: 3rem;
+		}
 	}
 </style>
