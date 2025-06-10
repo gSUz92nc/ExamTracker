@@ -65,11 +65,7 @@
 	const examBoards: ExamBoard[] = [
 		{ id: 'ocr', name: 'OCR' },
 		{ id: 'edexcel', name: 'Edexcel' },
-		{ id: 'aqa', name: 'AQA' },
-		{ id: 'ccea', name: 'CCEA' },
-		{ id: 'wjec', name: 'WJEC' },
-		{ id: 'ib', name: 'IB' },
-		{ id: 'cambridge', name: 'Cambridge' }
+		{ id: 'aqa', name: 'AQA' }
 	];
 
 	// Function to update URL query parameters
